@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+    
+    <!-- Google Fonts Matrix -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Georgia&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Client-Side Export Compilers -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/evidenceprime/html-docx-js@master/dist/html-docx.js"></script>
+
+    <style>
+        :root {
+            /* Certified Aesthetic Premium Pastel Base Tokens */
+            --pastel-bg: #fbf9f6;
+            --pastel-card: #ffffff;
+            --pastel-border: #f0e6df;
+            --pastel-border-hover: #dfce39;
+            --text-main: #3d3430;
+            --text-muted: #8a7a75;
+            
+            /* Dynamic Accent Color Engine Tokens */
+            --resume-primary: #b8c0ff; 
+            --resume-font: 'Plus Jakarta Sans', sans-serif;
+            --resume-multiplier: 1;
+            --resume-spacing: 16px;
+            --resume-align: left;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--pastel-bg);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-image: radial-gradient(var(--pastel-border) 1.2px, transparent 1.2px);
+            background-size: 20px 20px;
+        }
+
+        /* --- CONTROL SIDEBAR ARCHITECTURE --- */
+        .sidebar {
+            width: 540px;
+            min-width: 540px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(25px);
+            border-right: 1px solid var(--pastel-border);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-shadow: 12px 0 45px rgba(61, 52, 48, 0.03);
+            z-index: 10;
+            animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .brand-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--pastel-border);
+            background: linear-gradient(135deg, rgba(255,214,255,0.25), rgba(184,192,255,0.25));
+        }
+
+        .brand-header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .brand-header p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .tab-bar {
+            display: flex;
+            background: rgba(245, 235, 230, 0.5);
+            padding: 5px;
+            margin: 16px 32px 0 32px;
+            border-radius: 12px;
+            border: 1px solid var(--pastel-border);
+        }
+
+        .tab-trigger {
+            flex: 1;
+            padding: 9px;
+            background: none;
+            border: none;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 9px;
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .tab-trigger.active {
+            background: var(--pastel-card);
+            color: var(--text-main);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .panels-scroller {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 24px 32px;
+        }
+
+        .panel-view { display: none; }
+        .panel-view.active { display: block; animation: paneFade 0.3s ease forwards; }
+
+        @keyframes paneFade {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .label-heading {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            margin: 22px 0 12px 0;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .label-heading:first-child { margin-top: 0; }
+
+        /* --- THEME MATRIX CARD SELECTION CONTROLS --- */
+        .grid-matrix {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .aesthetic-card {
+            background: var(--pastel-card);
+            border: 1px solid var(--pastel-border);
+            border-radius: 14px;
+            padding: 14px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        .aesthetic-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.03);
+            border-color: #cbd5e1;
+        }
+        .aesthetic-card.selected {
+            border: 2px solid var(--text-main);
+        }
+        .aesthetic-card h4 { font-size: 0.82rem; font-weight: 600; margin-bottom: 2px; }
+        .aesthetic-card p { font-size: 0.7rem; color: var(--text-muted); }
+
+        /* --- ADVANCED EXPANDED PALETTE SYSTEM --- */
+        .palette-matrix {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .pastel-dot {
+            height: 38px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: rgba(0,0,0,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pastel-dot:hover { transform: scale(1.08); }
+        .pastel-dot.active { box-shadow: 0 0 0 2px var(--text-main); transform: scale(1.02); }
+
+        .custom-picker-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--pastel-card);
+            padding: 10px;
+            border: 1px solid var(--pastel-border);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .custom-picker-row label { font-size: 0.8rem; font-weight: 500; flex-grow: 1; }
+        .native-picker {
+            border: none; width: 40px; height: 30px; border-radius: 6px; cursor: pointer; background: transparent;
+        }
+
+        /* --- TOGGLE SECTIONS CONTROLLER SWATCHES --- */
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--pastel-card);
+            padding: 12px 16px;
+            border: 1px solid var(--pastel-border);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+        .switch-input {
+            cursor: pointer; width: 36px; height: 18px; accent-color: var(--text-main);
+        }
+
+        /* --- CONTROL INPUT NODES --- */
+        .dynamic-node-card {
+            background: var(--pastel-card);
+            border: 1px solid var(--pastel-border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .trash-action {
+            position: absolute;
+            top: 12px; right: 12px;
+            background: none; border: none;
+            color: #d90429; font-size: 0.72rem; font-weight: 600; cursor: pointer;
+        }
+        .input-group-element { margin-bottom: 8px; }
+        .input-group-element label { display: block; font-size: 0.7rem; font-weight: 600; margin-bottom: 3px; color: var(--text-muted); }
+
+        input[type="text"], textarea {
+            width: 100%; padding: 8px 12px;
+            border: 1px solid var(--pastel-border); border-radius: 8px;
+            font-size: 0.82rem; background: var(--pastel-bg); outline: none;
+        }
+        input[type="text"]:focus, textarea:focus {
+            border-color: #cbd5e1; background: #ffffff;
+        }
+
+        .append-node-btn {
+            width: 100%; padding: 10px;
+            background: linear-gradient(to right, rgba(184,192,255,0.06), rgba(255,214,255,0.06));
+            border: 1px dashed var(--pastel-border); border-radius: 10px;
+            font-size: 0.78rem; font-weight: 600; cursor: pointer;
+        }
+        .append-node-btn:hover { background: #ffffff; }
+
+        /* --- FOOTER ACTION DOCK AND APPSIGNATURE ARCHITECTURE --- */
+        .sidebar-footer-container {
+            border-top: 1px solid var(--pastel-border);
+            background: var(--pastel-card);
+            display: flex;
+            flex-direction: column;
+        }
+        .dock-footer {
+            padding: 20px 32px 10px 32px;
+            display: flex; gap: 10px; 
+        }
+        .action-button {
+            flex: 1; padding: 12px; border: 1px solid var(--pastel-border);
+            border-radius: 10px; font-size: 0.82rem; font-weight: 600;
+            cursor: pointer; background: var(--pastel-card); text-align: center;
+        }
+        .action-button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .action-button.call-to-action { background: var(--text-main); color: #ffffff; border: none; }
+        
+        .app-signature-footer {
+            padding-bottom: 16px;
+            text-align: center;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.2px;
+        }
+        .app-signature-footer span {
+            color: #ff4d6d;
+        }
+
+        /* --- LIVE PREVIEW WORKSPACE VIEWPORT --- */
+        .canvas-viewport {
+            flex-grow: 1; padding: 40px; overflow-y: auto;
+            display: flex; justify-content: center; align-items: flex-start;
+        }
+
+        .sheet-paper {
+            width: 210mm; min-height: 297mm;
+            background: #ffffff;
+            box-shadow: 0 15px 45px rgba(61, 52, 48, 0.04);
+            padding: 24mm; box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: canvasAppear 0.6s ease-out;
+        }
+
+        @keyframes canvasAppear {
+            from { transform: translateY(15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* --- LIVE EDIT REVOLUTIONARY HIGHLIGHT ENGINE --- */
+        .sheet-paper [contenteditable="true"] {
+            outline: none; border-radius: 4px; border: 1px solid transparent;
+            padding: 2px 4px; margin: -2px -4px;
+            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .sheet-paper [contenteditable="true"]:hover {
+            background: rgba(var(--resume-primary-rgb, 184, 192, 255), 0.15);
+        }
+        /* Dynamic Highlight Pulse Rules when user interacts */
+        .sheet-paper [contenteditable="true"]:focus,
+        .sheet-paper [contenteditable="true"].ui-highlight-active {
+            background: rgba(var(--resume-primary-rgb, 184, 192, 255), 0.22) !important;
+            border-color: var(--resume-primary) !important;
+            box-shadow: 0 0 12px rgba(var(--resume-primary-rgb, 184, 192, 255), 0.4);
+            animation: highlightPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% { opacity: 1; }
+            50% { background: rgba(var(--resume-primary-rgb, 184, 192, 255), 0.32); }
+        }
+
+        /* Hidden Section State Macro */
+        .canvas-section-row.section-disabled {
+            display: none !important;
+        }
+
+        /* --- TYPOGRAPHY VIBE MATRIX ENGINES --- */
+        .type-periwinkle { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .type-periwinkle .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.4); }
+        .type-periwinkle .canvas-name-title { font-size: calc(23pt * var(--resume-multiplier)); font-weight: 700; color: var(--resume-primary); }
+        .type-periwinkle .canvas-section-row { margin-bottom: var(--resume-spacing); }
+        .type-periwinkle .canvas-section-heading { font-size: calc(10.5pt * var(--resume-multiplier)); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--resume-primary); border-bottom: 2px solid var(--resume-primary); padding-bottom: 2px; margin-bottom: 10px; }
+
+        .type-lora { font-family: 'Lora', serif; }
+        .type-lora .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.5); border-left: 4px solid var(--resume-primary); padding-left: 14px; }
+        .type-lora .canvas-name-title { font-size: calc(24pt * var(--resume-multiplier)); font-weight: 600; color: var(--resume-primary); }
+        .type-lora .canvas-section-row { margin-bottom: var(--resume-spacing); }
+        .type-lora .canvas-section-heading { font-size: calc(12pt * var(--resume-multiplier)); font-weight: 600; color: var(--resume-primary); border-bottom: 1px dashed var(--resume-primary); padding-bottom: 3px; margin-bottom: 10px; }
+
+        .type-mono { font-family: 'Fira Code', monospace; font-size: calc(9.5pt * var(--resume-multiplier)); }
+        .type-mono .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.4); }
+        .type-mono .canvas-name-title { font-size: calc(17pt * var(--resume-multiplier)); font-weight: 700; color: var(--resume-primary); }
+        .type-mono .canvas-section-row { margin-bottom: var(--resume-spacing); }
+        .type-mono .canvas-section-heading { font-size: calc(10.5pt * var(--resume-multiplier)); font-weight: 600; color: var(--resume-primary); margin-bottom: 8px; }
+        .type-mono .canvas-section-heading::before { content: "» "; color: var(--resume-primary); }
+
+        .type-serif { font-family: 'Georgia', serif; }
+        .type-serif .canvas-header-block { text-align: center; margin-bottom: calc(var(--resume-spacing) * 1.8); }
+        .type-serif .canvas-name-title { font-size: calc(22pt * var(--resume-multiplier)); text-transform: uppercase; color: var(--resume-primary); letter-spacing: 1px; }
+        .type-serif .canvas-section-row { margin-bottom: var(--resume-spacing); }
+        .type-serif .canvas-section-heading { font-size: calc(11pt * var(--resume-multiplier)); font-weight: 700; text-align: center; text-transform: uppercase; color: var(--resume-primary); margin-bottom: 12px; }
+
+        .type-inter { font-family: 'Inter', sans-serif; }
+        .type-inter .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.4); border-bottom: 1px solid var(--pastel-border); padding-bottom: 12px; }
+        .type-inter .canvas-name-title { font-size: calc(23pt * var(--resume-multiplier)); font-weight: 800; color: var(--resume-primary); letter-spacing: -0.5px; }
+        .type-inter .canvas-section-row { margin-bottom: var(--resume-spacing); }
+        .type-inter .canvas-section-heading { font-size: calc(11pt * var(--resume-multiplier)); font-weight: 700; color: var(--resume-primary); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .type-inter .canvas-section-heading::after { content: ''; flex-grow: 1; height: 1px; background: var(--pastel-border); }
+
+        /* Standard Structural Canvas Subline Data Sets */
+        .canvas-contact-title { font-size: calc(9.5pt * var(--resume-multiplier)); color: #5c5552; margin-top: 4px; line-height: 1.4; }
+        .data-item-container { margin-bottom: 10px; }
+        .data-flex-row { display: flex; justify-content: space-between; font-weight: 600; font-size: calc(10pt * var(--resume-multiplier)); color: #111; }
+        .data-flex-sub { display: flex; justify-content: space-between; font-style: italic; font-size: calc(9.5pt * var(--resume-multiplier)); color: #555; margin-bottom: 2px; }
+        .data-desc-node { font-size: calc(9.5pt * var(--resume-multiplier)); color: #222; line-height: 1.45; white-space: pre-line; }
+        .data-body-text { font-size: calc(9.5pt * var(--resume-multiplier)); line-height: 1.45; color: #222; white-space: pre-line; }
+    </style>
+</head>
+<body>
+
+    <!-- CONTROL SIDEBAR -->
+    <div class="sidebar">
+        <div class="brand-header">
+            <h1>Resume Builder</h1>
+            <p>Live Interactive Highlight Canvas Engine</p>
+        </div>
+
+        <div class="tab-bar">
+            <button class="tab-trigger active" onclick="toggleActiveTab('tab-style', this)">Aesthetics</button>
+            <button class="tab-trigger" onclick="toggleActiveTab('tab-records', this)">Data Node Registry</button>
+            <button class="tab-trigger" onclick="toggleActiveTab('tab-modules', this)">Modules</button>
+        </div>
+
+        <div class="panels-scroller">
+            
+            <!-- PANEL 1: AESTHETIC STYLING MANAGER -->
+            <div id="tab-style" class="panel-view active">
+                <div class="label-heading">Typography Blueprint Design Vibe</div>
+                <div class="grid-matrix">
+                    <div class="aesthetic-card selected" onclick="updateCanvasLayout('type-periwinkle', this)">
+                        <h4>Periwinkle Neo</h4>
+                        <p>Modern Sans-Serif grid balance.</p>
+                    </div>
+                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-lora', this)">
+                        <h4>Soft Editorial</h4>
+                        <p>Academic Lora serif structure.</p>
+                    </div>
+                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-mono', this)">
+                        <h4>Modern Grid</h4>
+                        <p>Technical engine monospace lines.</p>
+                    </div>
+                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-serif', this)">
+                        <h4>Elegant Classic</h4>
+                        <p>Centered classic literary symmetry.</p>
+                    </div>
+                    <div class="aesthetic-card" style="grid-column: span 2;" onclick="updateCanvasLayout('type-inter', this)">
+                        <h4>Minimal Slate</h4>
+                        <p>Ultra bold high-contrast clean design layouts.</p>
+                    </div>
+                </div>
+
+                <div class="label-heading">Curated Pastel Color Systems</div>
+                <div class="palette-matrix">
+                    <div class="pastel-dot active" style="background: #3d3430;" onclick="setThemeAccentColor('#3d3430', this)">Char</div>
+                    <div class="pastel-dot" style="background: #a2b2c8;" onclick="setThemeAccentColor('#a2b2c8', this)">Slate</div>
+                    <div class="pastel-dot" style="background: #b8c0ff;" onclick="setThemeAccentColor('#b8c0ff', this)">Peri</div>
+                    <div class="pastel-dot" style="background: #ffd6ff;" onclick="setThemeAccentColor('#ffd6ff', this)">Bloss</div>
+                    <div class="pastel-dot" style="background: #e8f5e9;" onclick="setThemeAccentColor('#e8f5e9', this)">Mint</div>
+                    <div class="pastel-dot" style="background: #faedcd;" onclick="setThemeAccentColor('#faedcd', this)">Sand</div>
+                    <div class="pastel-dot" style="background: #ffd8be;" onclick="setThemeAccentColor('#ffd8be', this)">Peach</div>
+                    <div class="pastel-dot" style="background: #ffadad;" onclick="setThemeAccentColor('#ffadad', this)">Rose</div>
+                    <div class="pastel-dot" style="background: #fdffb6;" onclick="setThemeAccentColor('#fdffb6', this)">Straw</div>
+                    <div class="pastel-dot" style="background: #caffbf;" onclick="setThemeAccentColor('#caffbf', this)">Basil</div>
+                    <div class="pastel-dot" style="background: #9bf6ff;" onclick="setThemeAccentColor('#9bf6ff', this)">Sky</div>
+                    <div class="pastel-dot" style="background: #a0c4ff;" onclick="setThemeAccentColor('#a0c4ff', this)">Ocean</div>
+                </div>
+
+                <div class="custom-picker-row">
+                    <label>Or Mix Custom Accent Vibe Code:</label>
+                    <input type="color" class="native-picker" value="#b8c0ff" oninput="setThemeAccentColor(this.value, null)">
+                </div>
+
+                <div class="label-heading">Structural Geometry Mapping</div>
+                <div class="slider-wrapper" style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem; font-weight:600;">Text Scale: <span id="lbl-scale">1.00x</span></label>
+                    <input type="range" min="0.75" max="1.25" step="0.05" value="1" oninput="adjustCanvasGeometry('scale', this.value)">
+                </div>
+                <div class="slider-wrapper" style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem; font-weight:600;">Spacings: <span id="lbl-space">16px</span></label>
+                    <input type="range" min="8" max="26" step="2" value="16" oninput="adjustCanvasGeometry('spacing', this.value)">
+                </div>
+
+                <div class="label-heading">Header Text Alignment Align</div>
+                <div style="display:flex; gap:8px;">
+                    <button class="action-button" style="padding:6px; font-size:0.75rem;" onclick="adjustCanvasGeometry('align', 'left')">Left</button>
+                    <button class="action-button" style="padding:6px; font-size:0.75rem;" onclick="adjustCanvasGeometry('align', 'center')">Center</button>
+                    <button class="action-button" style="padding:6px; font-size:0.75rem;" onclick="adjustCanvasGeometry('align', 'right')">Right</button>
+                </div>
+            </div>
+
+            <!-- PANEL 2: COMPILER DATA REGISTRY ENTRIES -->
+            <div id="tab-records" class="panel-view">
+                <div class="label-heading">Primary Coordinates</div>
+                <div class="input-group-element">
+                    <label>Full Name Header</label>
+                    <input type="text" id="in-name" value="Rowan Avery" onfocus="triggerUiFieldHighlight('canvas-name-target')" onblur="removeUiFieldHighlight('canvas-name-target')" oninput="syncInputToCanvas('canvas-name-target', this.value)">
+                </div>
+                <div class="input-group-element">
+                    <label>Contact Substrings</label>
+                    <input type="text" id="in-contact" value="rowan.avery@email.com | +1 (555) 019-2834 | San Francisco, CA" onfocus="triggerUiFieldHighlight('canvas-contact-target')" onblur="removeUiFieldHighlight('canvas-contact-target')" oninput="syncInputToCanvas('canvas-contact-target', this.value)">
+                </div>
+
+                <div class="label-heading">Executive Summary</div>
+                <div class="input-group-element">
+                    <textarea id="in-summary" rows="3" onfocus="triggerUiFieldHighlight('canvas-summary-target')" onblur="removeUiFieldHighlight('canvas-summary-target')" oninput="syncInputToCanvas('canvas-summary-target', this.value)">Performance-driven professional specializing in clean structural design systems and optimized layout architectures. Experienced in building compliant and aesthetic framework configurations.</textarea>
+                </div>
+
+                <div class="label-heading">
+                    <span>Experience History</span>
+                    <button onclick="appendExperienceBlock()" style="background:none; border:none; color:var(--text-main); font-weight:700; cursor:pointer; font-size:0.78rem;">+ Add Block</button>
+                </div>
+                <div id="input-group-experience"></div>
+
+                <div class="label-heading">
+                    <span>Education Ledger</span>
+                    <button onclick="appendEducationBlock()" style="background:none; border:none; color:var(--text-main); font-weight:700; cursor:pointer; font-size:0.78rem;">+ Add Block</button>
+                </div>
+                <div id="input-group-education"></div>
+
+                <div class="label-heading">Core Skills Array</div>
+                <div class="input-group-element">
+                    <input type="text" id="in-skills" value="System Engineering, Figma UI, HTML5 Semantic Matrix, Scaled Optimization Metrics" onfocus="triggerUiFieldHighlight('canvas-skills-target')" onblur="removeUiFieldHighlight('canvas-skills-target')" oninput="syncInputToCanvas('canvas-skills-target', this.value)">
+                </div>
+            </div>
+
+            <!-- PANEL 3: MODULAR STRUCTURAL TOGGLES -->
+            <div id="tab-modules" class="panel-view">
+                <div class="label-heading">Toggle & Customize Modules</div>
+                
+                <div class="toggle-row">
+                    <span>Include Projects Section</span>
+                    <input type="checkbox" checked class="switch-input" onchange="toggleModuleVisibility('mod-projects', this.checked)">
+                </div>
+                <div class="input-group-element" style="margin-bottom:16px;">
+                    <label>Project Details Body</label>
+                    <textarea id="in-projects" rows="3" onfocus="triggerUiFieldHighlight('canvas-projects-target')" onblur="removeUiFieldHighlight('canvas-projects-target')" oninput="syncInputToCanvas('canvas-projects-target', this.value)">• AuraSuite Engine — Built high-fidelity modular layout configuration maps using client rendering engines.&#10;• Matrix Schema — Designed optimized relational metadata databases parsing global ATS system criteria smoothly.</textarea>
+                </div>
+
+                <div class="toggle-row">
+                    <span>Include Certifications</span>
+                    <input type="checkbox" checked class="switch-input" onchange="toggleModuleVisibility('mod-certs', this.checked)">
+                </div>
+                <div class="input-group-element" style="margin-bottom:16px;">
+                    <label>Certificates Body Text</label>
+                    <input type="text" id="in-certs" value="Certified Cloud Systems Designer (2025) | Interaction Architect Expert Frameworks (2024)" onfocus="triggerUiFieldHighlight('canvas-certs-target')" onblur="removeUiFieldHighlight('canvas-certs-target')" oninput="syncInputToCanvas('canvas-certs-target', this.value)">
+                </div>
+
+                <div class="toggle-row">
+                    <span>Include Custom Section</span>
+                    <input type="checkbox" id="check-custom" class="switch-input" onchange="toggleModuleVisibility('mod-custom', this.checked)">
+                </div>
+                <div class="input-group-element">
+                    <label>Custom Section Header Title</label>
+                    <input type="text" id="in-custom-title" value="Honors & Awards" onfocus="triggerUiFieldHighlight('canvas-custom-heading')" onblur="removeUiFieldHighlight('canvas-custom-heading')" oninput="syncInputToCanvas('canvas-custom-heading', this.value)">
+                </div>
+                <div class="input-group-element">
+                    <label>Custom Section Content</label>
+                    <textarea id="in-custom-body" rows="2" onfocus="triggerUiFieldHighlight('canvas-custom-target')" onblur="removeUiFieldHighlight('canvas-custom-target')" oninput="syncInputToCanvas('canvas-custom-target', this.value)">• Winner of International Aesthetic Interface Compilers Challenge (2025)&#10;• Published Author of Minimal Layer Optimization Metrics Ledger.</textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER ACTIONS AND BRAND ATTRIBUTION CONTAINER -->
+        <div class="sidebar-footer-container">
+            <div class="dock-footer">
+                <button class="action-button" onclick="triggerWordExport()">Export DOCX</button>
+                <button class="action-button call-to-action" onclick="triggerPdfExport()">Download PDF</button>
+            </div>
+            <div class="app-signature-footer">
+                Made with <span>❤️</span> by Gadepalli Saipriyank
+            </div>
+        </div>
+    </div>
+
+    <!-- CANVAS VIEWSPACE WORKSPACE -->
+    <div class="canvas-viewport">
+        <div id="canvasSheetEntity" class="sheet-paper type-periwinkle">
+            
+            <!-- Identity Header Block -->
+            <div class="canvas-header-block" id="block-header-node" onfocusin="triggerUiFieldHighlight('block-header-node')" onfocusout="removeUiFieldHighlight('block-header-node')">
+                <div id="canvas-name-target" class="canvas-name-title" contenteditable="true" onblur="syncCanvasToInputControl('in-name', this.innerText)">Rowan Avery</div>
+                <div id="canvas-contact-target" class="canvas-contact-title" contenteditable="true" onblur="syncCanvasToInputControl('in-contact', this.innerText)">rowan.avery@email.com | +1 (555) 019-2834 | San Francisco, CA</div>
+            </div>
+
+            <!-- Profile Summary Section -->
+            <div class="canvas-section-row" id="block-summary-node" onfocusin="triggerUiFieldHighlight('block-summary-node')" onfocusout="removeUiFieldHighlight('block-summary-node')">
+                <div class="canvas-section-heading" contenteditable="true">Professional Summary</div>
+                <div id="canvas-summary-target" class="data-body-text" contenteditable="true" onblur="syncCanvasToInputControl('in-summary', this.innerText)">Performance-driven professional specializing in clean structural design systems and optimized layout architectures. Experienced in building compliant and aesthetic framework configurations.</div>
+            </div>
+
+            <!-- Experience Entry Target Block -->
+            <div class="canvas-section-row" id="block-experience-node" onfocusin="triggerUiFieldHighlight('block-experience-node')" onfocusout="removeUiFieldHighlight('block-experience-node')">
+                <div class="canvas-section-heading" contenteditable="true">Professional Experience</div>
+                <div id="canvas-experience-entry-root"></div>
+            </div>
+
+            <!-- Education Entry Target Block -->
+            <div class="canvas-section-row" id="block-education-node" onfocusin="triggerUiFieldHighlight('block-education-node')" onfocusout="removeUiFieldHighlight('block-education-node')">
+                <div class="canvas-section-heading" contenteditable="true">Education</div>
+                <div id="canvas-education-entry-root"></div>
+            </div>
+
+            <!-- Projects Dynamic Module Section -->
+            <div class="canvas-section-row" id="mod-projects" onfocusin="triggerUiFieldHighlight('mod-projects')" onfocusout="removeUiFieldHighlight('mod-projects')">
+                <div class="canvas-section-heading" contenteditable="true">Key Projects</div>
+                <div id="canvas-projects-target" class="data-body-text" contenteditable="true" onblur="syncCanvasToInputControl('in-projects', this.innerText)">• AuraSuite Engine — Built high-fidelity modular layout configuration maps using client rendering engines.&#10;• Matrix Schema — Designed optimized relational metadata databases parsing global ATS system criteria smoothly.</div>
+            </div>
+
+            <!-- Certifications Module Section -->
+            <div class="canvas-section-row" id="mod-certs" onfocusin="triggerUiFieldHighlight('mod-certs')" onfocusout="removeUiFieldHighlight('mod-certs')">
+                <div class="canvas-section-heading" contenteditable="true">Certifications</div>
+                <div id="canvas-certs-target" class="data-body-text" contenteditable="true" onblur="syncCanvasToInputControl('in-certs', this.innerText)">Certified Cloud Systems Designer (2025) | Interaction Architect Expert Frameworks (2024)</div>
+            </div>
+
+            <!-- Completely Custom Variable Module Section -->
+            <div class="canvas-section-row section-disabled" id="mod-custom" onfocusin="triggerUiFieldHighlight('mod-custom')" onfocusout="removeUiFieldHighlight('mod-custom')">
+                <div id="canvas-custom-heading" class="canvas-section-heading" contenteditable="true" onblur="syncCanvasToInputControl('in-custom-title', this.innerText)">Honors & Awards</div>
+                <div id="canvas-custom-target" class="data-body-text" contenteditable="true" onblur="syncCanvasToInputControl('in-custom-body', this.innerText)">• Winner of International Aesthetic Interface Compilers Challenge (2025)&#10;• Published Author of Minimal Layer Optimization Metrics Ledger.</div>
+            </div>
+
+            <!-- Skills Static Root Node -->
+            <div class="canvas-section-row" id="block-skills-node" onfocusin="triggerUiFieldHighlight('block-skills-node')" onfocusout="removeUiFieldHighlight('block-skills-node')">
+                <div class="canvas-section-heading" contenteditable="true">Skills & Expertise</div>
+                <div id="canvas-skills-target" class="data-body-text" contenteditable="true" onblur="syncCanvasToInputControl('in-skills', this.innerText)">System Engineering, Figma UI, HTML5 Semantic Matrix, Scaled Optimization Metrics</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT INFRASTRUCTURE INTERACTION LAYER -->
+    <script>
+        // Core Reactive Structural Data Collections State
+        let expStateList = JSON.parse(localStorage.getItem('as_exp_state')) || [
+            { id: 401, role: "Senior UX Solutions Designer", firm: "Studio Analytics / SF", timeline: "2024 - Present", bullets: "• Supervised data interface visual logic deployment matrices.\n• Optimized layout asset delivery configurations by 14%." }
+        ];
+
+        let eduStateList = JSON.parse(localStorage.getItem('as_edu_state')) || [
+            { id: 501, degree: "B.S. in Interaction Systems Engineering", school: "Design Institute of California", timeline: "2022" }
+        ];
+
+        function toggleActiveTab(panelId, eventTrigger) {
+            document.querySelectorAll('.tab-trigger').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.panel-view').forEach(el => el.classList.remove('active'));
+            eventTrigger.classList.add('active');
+            document.getElementById(panelId).classList.add('active');
+        }
+
+        function updateCanvasLayout(vibeClass, elementRef) {
+            document.querySelectorAll('.aesthetic-card').forEach(c => c.classList.remove('selected'));
+            elementRef.classList.add('selected');
+            document.getElementById('canvasSheetEntity').className = `sheet-paper ${vibeClass}`;
+        }
+
+        // Color Converter Utility to compute overlay alpha channels dynamically
+        function convertHexToRgbChannels(hex) {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
+            const intVal = parseInt(hex, 16);
+            return `${(intVal >> 16) & 255}, ${(intVal >> 8) & 255}, ${intVal & 255}`;
+        }
+
+        function setThemeAccentColor(hexVal, activeDotRef) {
+            if(activeDotRef) {
+                document.querySelectorAll('.pastel-dot').forEach(d => d.classList.remove('active'));
+                activeDotRef.classList.add('active');
+            }
+            document.documentElement.style.setProperty('--resume-primary', hexVal);
+            document.documentElement.style.setProperty('--resume-primary-rgb', convertHexToRgbChannels(hexVal));
+        }
+
+        function adjustCanvasGeometry(mode, factor) {
+            if(mode === 'scale') {
+                document.documentElement.style.setProperty('--resume-multiplier', factor);
+                document.getElementById('lbl-scale').innerText = parseFloat(factor).toFixed(2) + 'x';
+            } else if(mode === 'spacing') {
+                document.documentElement.style.setProperty('--resume-spacing', factor + 'px');
+                document.getElementById('lbl-space').innerText = factor + 'px';
+            } else if(mode === 'align') {
+                document.documentElement.style.setProperty('--resume-align', factor);
+            }
+        }
+
+        // --- INTERACTIVE PULSING HIGHLIGHT UTILITIES ---
+        function triggerUiFieldHighlight(elementId) {
+            const node = document.getElementById(elementId);
+            if(node) node.classList.add('ui-highlight-active');
+        }
+
+        function removeUiFieldHighlight(elementId) {
+            const node = document.getElementById(elementId);
+            if(node) node.classList.remove('ui-highlight-active');
+        }
+
+        function toggleModuleVisibility(moduleId, isChecked) {
+            const targetNode = document.getElementById(moduleId);
+            if(targetNode) {
+                if(isChecked) {
+                    targetNode.classList.remove('section-disabled');
+                    triggerUiFieldHighlight(moduleId);
+                    setTimeout(() => removeUiFieldHighlight(moduleId), 1200);
+                } else {
+                    targetNode.classList.add('section-disabled');
+                }
+            }
+        }
+
+        // Sync inputs securely 
+        function syncInputToCanvas(canvasId, text) {
+            document.getElementById(canvasId).innerText = text;
+            autoSaveStateToLocalStorage();
+        }
+
+        function syncCanvasToInputControl(inputId, text) {
+            document.getElementById(inputId).value = text;
+            autoSaveStateToLocalStorage();
+        }
+
+        // Experience Block Compilers Array 
+        function renderExperienceEngine() {
+            const panel = document.getElementById('input-group-experience');
+            const view = document.getElementById('canvas-experience-entry-root');
+            panel.innerHTML = ''; view.innerHTML = '';
+
+            expStateList.forEach(item => {
+                const uiCard = document.createElement('div');
+                uiCard.className = 'dynamic-node-card';
+                uiCard.innerHTML = `
+                    <button class="trash-action" onclick="deleteExperienceBlock(${item.id})">Remove</button>
+                    <div class="input-group-element"><label>Role / Position Title</label><input type="text" value="${item.role}" onfocus="triggerUiFieldHighlight('exp-view-${item.id}')" onblur="removeUiFieldHighlight('exp-view-${item.id}')" oninput="mutateExperienceData(${item.id}, 'role', this.value)"></div>
+                    <div class="input-group-element"><label>Company / Division</label><input type="text" value="${item.firm}" onfocus="triggerUiFieldHighlight('exp-view-${item.id}')" onblur="removeUiFieldHighlight('exp-view-${item.id}')" oninput="mutateExperienceData(${item.id}, 'firm', this.value)"></div>
+                    <div class="input-group-element"><label>Timeline</label><input type="text" value="${item.timeline}" onfocus="triggerUiFieldHighlight('exp-view-${item.id}')" onblur="removeUiFieldHighlight('exp-view-${item.id}')" oninput="mutateExperienceData(${item.id}, 'timeline', this.value)"></div>
+                    <div class="input-group-element"><label>Bullets Mapping</label><textarea rows="2" onfocus="triggerUiFieldHighlight('exp-view-${item.id}')" onblur="removeUiFieldHighlight('exp-view-${item.id}')" oninput="mutateExperienceData(${item.id}, 'bullets', this.value)">${item.bullets}</textarea></div>
+                `;
+                panel.appendChild(uiCard);
+
+                const canvasBlock = document.createElement('div');
+                canvasBlock.className = 'data-item-container';
+                canvasBlock.id = `exp-view-${item.id}`;
+                canvasBlock.innerHTML = `
+                    <div class="data-flex-row"><span contenteditable="true" onblur="mutateExperienceData(${item.id}, 'role', this.innerText, true)">${item.role}</span><span contenteditable="true" onblur="mutateExperienceData(${item.id}, 'timeline', this.innerText, true)">${item.timeline}</span></div>
+                    <div class="data-flex-sub"><span contenteditable="true" onblur="mutateExperienceData(${item.id}, 'firm', this.innerText, true)">${item.firm}</span><span></span></div>
+                    <div class="data-desc-node" contenteditable="true" onblur="mutateExperienceData(${item.id}, 'bullets', this.innerText, true)">${item.bullets}</div>
+                `;
+                view.appendChild(canvasBlock);
+            });
+        }
+
+        function appendExperienceBlock() {
+            const uid = Date.now();
+            expStateList.push({ id: uid, role: "Lead Systems Architect", firm: "Enterprise Network Solutions", timeline: "2025", bullets: "• Deployed highly robust interface architectures layout pipelines." });
+            renderExperienceEngine();
+            autoSaveStateToLocalStorage();
+            triggerUiFieldHighlight(`exp-view-${uid}`);
+        }
+
+        function deleteExperienceBlock(id) {
+            expStateList = expStateList.filter(item => item.id !== id);
+            renderExperienceEngine();
+            autoSaveStateToLocalStorage();
+        }
+
+        function mutateExperienceData(id, key, val, preventRebuild = false) {
+            let record = expStateList.find(x => x.id === id);
+            if(record) {
+                record[key] = val;
+                if(!preventRebuild) renderExperienceEngine();
+                autoSaveStateToLocalStorage();
+            }
+        }
+
+        // Education Block Compilers Array
+        function renderEducationEngine() {
+            const panel = document.getElementById('input-group-education');
+            const view = document.getElementById('canvas-education-entry-root');
+            panel.innerHTML = ''; view.innerHTML = '';
+
+            eduStateList.forEach(item => {
+                const uiCard = document.createElement('div');
+                uiCard.className = 'dynamic-node-card';
+                uiCard.innerHTML = `
+                    <button class="trash-action" onclick="deleteEducationBlock(${item.id})">Remove</button>
+                    <div class="input-group-element"><label>Degree / Program</label><input type="text" value="${item.degree}" onfocus="triggerUiFieldHighlight('edu-view-${item.id}')" onblur="removeUiFieldHighlight('edu-view-${item.id}')" oninput="mutateEducationData(${item.id}, 'degree', this.value)"></div>
+                    <div class="input-group-element"><label>Institution / School</label><input type="text" value="${item.school}" onfocus="triggerUiFieldHighlight('edu-view-${item.id}')" onblur="removeUiFieldHighlight('edu-view-${item.id}')" oninput="mutateEducationData(${item.id}, 'school', this.value)"></div>
+                    <div class="input-group-element"><label>Timeline Year</label><input type="text" value="${item.timeline}" onfocus="triggerUiFieldHighlight('edu-view-${item.id}')" onblur="removeUiFieldHighlight('edu-view-${item.id}')" oninput="mutateEducationData(${item.id}, 'timeline', this.value)"></div>
+                `;
+                panel.appendChild(uiCard);
+
+                const canvasBlock = document.createElement('div');
+                canvasBlock.className = 'data-item-container';
+                canvasBlock.id = `edu-view-${item.id}`;
+                canvasBlock.innerHTML = `
+                    <div class="data-flex-row"><span contenteditable="true" onblur="mutateEducationData(${item.id}, 'degree', this.innerText, true)">${item.degree}</span><span contenteditable="true" onblur="mutateEducationData(${item.id}, 'timeline', this.innerText, true)">${item.timeline}</span></div>
+                    <div class="data-flex-sub"><span contenteditable="true" onblur="mutateEducationData(${item.id}, 'school', this.innerText, true)">${item.school}</span><span></span></div>
+                `;
+                view.appendChild(canvasBlock);
+            });
+        }
+
+        function appendEducationBlock() {
+            const uid = Date.now();
+            eduStateList.push({ id: uid, degree: "M.S. Technical Systems Optimization", school: "State Institute Council", timeline: "2024" });
+            renderEducationEngine();
+            autoSaveStateToLocalStorage();
+            triggerUiFieldHighlight(`edu-view-${uid}`);
+        }
+
+        function deleteEducationBlock(id) {
+            eduStateList = eduStateList.filter(item => item.id !== id);
+            renderEducationEngine();
+            autoSaveStateToLocalStorage();
+        }
+
+        function mutateEducationData(id, key, val, preventRebuild = false) {
+            let record = eduStateList.find(x => x.id === id);
+            if(record) {
+                record[key] = val;
+                if(!preventRebuild) renderEducationEngine();
+                autoSaveStateToLocalStorage();
+            }
+        }
+
+        function autoSaveStateToLocalStorage() {
+            localStorage.setItem('as_exp_state', JSON.stringify(expStateList));
+            localStorage.setItem('as_edu_state', JSON.stringify(eduStateList));
+        }
+
+        // Export Actions Core Compilers
+        function triggerPdfExport() {
+            const rootNode = document.getElementById('canvasSheetEntity');
+            const parameters = {
+                margin: 0, filename: 'Resume.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2.4, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(parameters).from(rootNode).save();
+        }
+
+        // Microsoft Word export logic 
+        function triggerWordExport() {
+            const rawBody = document.getElementById('canvasSheetEntity').innerHTML;
+            const fullStructure = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:'Arial',sans-serif;padding:30px;color:#222;} .canvas-section-heading{font-size:14px;font-weight:bold;border-bottom:1px solid #333;margin-top:15px;}</style></head><body>${rawBody}</body></html>`;
+            const docBlob = htmlDocx.asBlob(fullStructure);
+            const virtualAnchor = document.createElement('a');
+            virtualAnchor.href = URL.createObjectURL(docBlob);
+            virtualAnchor.download = 'Resume_Document.docx';
+            virtualAnchor.click();
+        }
+
+        // Startup Core Components Initializations
+        renderExperienceEngine();
+        renderEducationEngine();
+    </script>
+</body>
+</html>
