@@ -3,31 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Builder</title>
+    <title>Resume Builder Pro</title>
     
-    <!-- Google Fonts Matrix -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Georgia&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Client-Side Export Compilers -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/evidenceprime/html-docx-js@master/dist/html-docx.js"></script>
 
     <style>
         :root {
-            /* Certified Aesthetic Premium Pastel Base Tokens */
-            --pastel-bg: #fbf9f6;
+            --pastel-bg: #f8f9fa;
             --pastel-card: #ffffff;
-            --pastel-border: #f0e6df;
-            --pastel-border-hover: #dfce39;
-            --text-main: #3d3430;
-            --text-muted: #8a7a75;
+            --pastel-border: #e9ecef;
+            --text-main: #212529;
+            --text-muted: #6c757d;
             
-            /* Dynamic Accent Color Engine Tokens */
-            --resume-primary: #b8c0ff; 
+            /* Initial Global Resume Parameters Setup */
+            --resume-primary: #2196f3; 
             --resume-font: 'Plus Jakarta Sans', sans-serif;
             --resume-multiplier: 1;
             --resume-spacing: 16px;
             --resume-align: left;
+            --resume-font-weight: 400;
+            --resume-font-size: 10pt;
         }
 
         * {
@@ -35,7 +33,6 @@
             margin: 0;
             padding: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         body {
@@ -44,75 +41,65 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
-            background-image: radial-gradient(var(--pastel-border) 1.2px, transparent 1.2px);
-            background-size: 20px 20px;
         }
 
         /* --- CONTROL SIDEBAR ARCHITECTURE --- */
         .sidebar {
-            width: 540px;
-            min-width: 540px;
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(25px);
+            width: 480px;
+            min-width: 480px;
+            background: #ffffff;
             border-right: 1px solid var(--pastel-border);
             display: flex;
             flex-direction: column;
             height: 100%;
-            box-shadow: 12px 0 45px rgba(61, 52, 48, 0.03);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
             z-index: 10;
-            animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideInLeft {
-            from { transform: translateX(-100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
         }
 
         .brand-header {
             padding: 24px 32px;
             border-bottom: 1px solid var(--pastel-border);
-            background: linear-gradient(135deg, rgba(255,214,255,0.25), rgba(184,192,255,0.25));
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(184, 192, 255, 0.1));
         }
 
         .brand-header h1 {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 700;
             letter-spacing: -0.5px;
             color: var(--text-main);
         }
 
         .brand-header p {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            margin-top: 3px;
+            margin-top: 2px;
         }
 
         .tab-bar {
             display: flex;
-            background: rgba(245, 235, 230, 0.5);
-            padding: 5px;
+            background: #f1f3f5;
+            padding: 4px;
             margin: 16px 32px 0 32px;
-            border-radius: 12px;
-            border: 1px solid var(--pastel-border);
+            border-radius: 8px;
         }
 
         .tab-trigger {
             flex: 1;
-            padding: 9px;
+            padding: 8px;
             background: none;
             border: none;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--text-muted);
             cursor: pointer;
-            border-radius: 9px;
-            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border-radius: 6px;
+            transition: all 0.2s ease;
         }
 
         .tab-trigger.active {
             background: var(--pastel-card);
             color: var(--text-main);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
 
         .panels-scroller {
@@ -122,19 +109,14 @@
         }
 
         .panel-view { display: none; }
-        .panel-view.active { display: block; animation: paneFade 0.3s ease forwards; }
-
-        @keyframes paneFade {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .panel-view.active { display: block; }
 
         .label-heading {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
             color: var(--text-muted);
-            margin: 22px 0 12px 0;
+            margin: 24px 0 12px 0;
             font-weight: 700;
             display: flex;
             justify-content: space-between;
@@ -142,7 +124,7 @@
         }
         .label-heading:first-child { margin-top: 0; }
 
-        /* --- THEME MATRIX CARD SELECTION CONTROLS --- */
+        /* --- THEME CONTROLS --- */
         .grid-matrix {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -153,48 +135,43 @@
         .aesthetic-card {
             background: var(--pastel-card);
             border: 1px solid var(--pastel-border);
-            border-radius: 14px;
-            padding: 14px;
+            border-radius: 8px;
+            padding: 12px;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            transition: all 0.2s ease;
         }
         .aesthetic-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.03);
-            border-color: #cbd5e1;
+            border-color: #ced4da;
+            background-color: #f8f9fa;
         }
         .aesthetic-card.selected {
             border: 2px solid var(--text-main);
         }
-        .aesthetic-card h4 { font-size: 0.82rem; font-weight: 600; margin-bottom: 2px; }
+        .aesthetic-card h4 { font-size: 0.8rem; font-weight: 600; margin-bottom: 2px; }
         .aesthetic-card p { font-size: 0.7rem; color: var(--text-muted); }
 
-        /* --- ADVANCED EXPANDED PALETTE SYSTEM --- */
         .palette-matrix {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
+            gap: 6px;
             margin-bottom: 16px;
         }
 
         .pastel-dot {
-            height: 38px;
-            border-radius: 10px;
+            height: 32px;
+            border-radius: 6px;
             cursor: pointer;
-            border: 2px solid #ffffff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 600;
-            color: rgba(0,0,0,0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
+            color: rgba(0,0,0,0.5);
+            transition: transform 0.1s ease;
         }
-        .pastel-dot:hover { transform: scale(1.08); }
-        .pastel-dot.active { box-shadow: 0 0 0 2px var(--text-main); transform: scale(1.02); }
+        .pastel-dot:hover { transform: scale(1.05); }
+        .pastel-dot.active { box-shadow: 0 0 0 2px var(--text-main); }
 
         .custom-picker-row {
             display: flex;
@@ -203,262 +180,430 @@
             background: var(--pastel-card);
             padding: 10px;
             border: 1px solid var(--pastel-border);
-            border-radius: 10px;
+            border-radius: 8px;
             margin-bottom: 20px;
         }
-        .custom-picker-row label { font-size: 0.8rem; font-weight: 500; flex-grow: 1; }
+        .custom-picker-row label { font-size: 0.75rem; font-weight: 500; flex-grow: 1; }
         .native-picker {
-            border: none; width: 40px; height: 30px; border-radius: 6px; cursor: pointer; background: transparent;
+            border: none; width: 36px; height: 26px; border-radius: 4px; cursor: pointer; background: transparent;
         }
 
-        /* --- TOGGLE SECTIONS CONTROLLER SWATCHES --- */
-        .toggle-row {
+        .slider-wrapper {
+            margin-bottom: 14px;
+        }
+        .slider-wrapper label {
+            display: block;
+            margin-bottom: 6px;
+        }
+        
+        /* Interactive Filled Theme Track Sliders Architectural Setup */
+        .theme-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e9ecef;
+            outline: none;
+        }
+        .theme-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--resume-primary);
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease;
+        }
+        .theme-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        .theme-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background: var(--resume-primary);
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease;
+        }
+        .theme-slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .styling-row-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .styling-row-actions label { font-size: 0.75rem; font-weight: 600; }
+        .styling-select-input { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--pastel-border); font-size: 0.75rem; outline: none; }
+
+        /* --- ACCORDION CORE ARCHITECTURE --- */
+        .accordion-wrapper {
+            border: 1px solid var(--pastel-border);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: var(--pastel-card);
+            overflow: hidden;
+        }
+        .accordion-trigger-header {
+            width: 100%;
+            padding: 14px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--pastel-card);
-            padding: 12px 16px;
-            border: 1px solid var(--pastel-border);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            font-size: 0.82rem;
-            font-weight: 500;
+            background: #ffffff;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s;
         }
-        .switch-input {
-            cursor: pointer; width: 36px; height: 18px; accent-color: var(--text-main);
+        .accordion-trigger-header:hover { background: #fdfdfd; }
+        .accordion-trigger-header span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--resume-primary);
         }
+        .accordion-icon-marker {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+        .accordion-wrapper.expanded .accordion-icon-marker { transform: rotate(180deg); }
+        .accordion-panel-body {
+            display: none;
+            padding: 16px;
+            border-top: 1px solid var(--pastel-border);
+            background: #f8f9fa;
+        }
+        .accordion-wrapper.expanded .accordion-panel-body { display: block; }
 
-        /* --- CONTROL INPUT NODES --- */
         .dynamic-node-card {
             background: var(--pastel-card);
             border: 1px solid var(--pastel-border);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 10px;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
             position: relative;
         }
+        .dynamic-node-card:last-child { margin-bottom: 0; }
+        
         .trash-action {
             position: absolute;
             top: 12px; right: 12px;
             background: none; border: none;
-            color: #d90429; font-size: 0.72rem; font-weight: 600; cursor: pointer;
+            color: #dc3545; font-size: 0.7rem; font-weight: 600; cursor: pointer;
         }
-        .input-group-element { margin-bottom: 8px; }
-        .input-group-element label { display: block; font-size: 0.7rem; font-weight: 600; margin-bottom: 3px; color: var(--text-muted); }
+        .input-group-element { margin-bottom: 10px; }
+        .input-group-element:last-child { margin-bottom: 0; }
+        .input-group-element label { display: block; font-size: 0.68rem; font-weight: 600; margin-bottom: 4px; color: var(--text-muted); }
+
+        .bullet-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .bullet-input-wrapper:last-child { margin-bottom: 0; }
 
         input[type="text"], textarea {
             width: 100%; padding: 8px 12px;
-            border: 1px solid var(--pastel-border); border-radius: 8px;
-            font-size: 0.82rem; background: var(--pastel-bg); outline: none;
+            border: 1px solid var(--pastel-border); border-radius: 6px;
+            font-size: 0.8rem; background: #f8f9fa; outline: none;
+            color: var(--text-main);
         }
         input[type="text"]:focus, textarea:focus {
-            border-color: #cbd5e1; background: #ffffff;
+            border-color: var(--resume-primary); background: #ffffff;
         }
+
+        /* --- DRAG & DROP DESIGN BLUEPRINTS MAP --- */
+        .section-order-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--pastel-card);
+            border: 1px solid var(--pastel-border);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: grab;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+        .section-order-card:active { cursor: grabbing; }
+        .section-order-card.dragging { opacity: 0.4; background-color: #f1f3f5; }
+        .section-order-card span {
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-order-card span::before { content: "☰"; color: var(--text-muted); font-size: 0.85rem; }
+        
+        .control-mini-btn {
+            padding: 4px 8px;
+            background: #f8f9fa;
+            border: 1px solid var(--pastel-border);
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .control-mini-btn:hover { background: #e9ecef; }
+        .control-mini-btn.delete-btn { color: #dc3545; }
 
         .append-node-btn {
             width: 100%; padding: 10px;
-            background: linear-gradient(to right, rgba(184,192,255,0.06), rgba(255,214,255,0.06));
-            border: 1px dashed var(--pastel-border); border-radius: 10px;
-            font-size: 0.78rem; font-weight: 600; cursor: pointer;
+            background: #f8f9fa;
+            border: 1px dashed #ced4da; border-radius: 8px;
+            font-size: 0.75rem; font-weight: 600; cursor: pointer;
+            margin-bottom: 16px;
+            transition: all 0.2s;
         }
-        .append-node-btn:hover { background: #ffffff; }
+        .append-node-btn:hover { background: #ffffff; border-color: var(--text-main); }
 
-        /* --- FOOTER ACTION DOCK AND APPSIGNATURE ARCHITECTURE --- */
+        /* --- FOOTER LAYOUT --- */
         .sidebar-footer-container {
             border-top: 1px solid var(--pastel-border);
-            background: var(--pastel-card);
+            background: #ffffff;
             display: flex;
             flex-direction: column;
         }
-        .dock-footer {
-            padding: 20px 32px 10px 32px;
-            display: flex; gap: 10px; 
-        }
+        .dock-footer { padding: 16px 32px 10px 32px; display: flex; gap: 10px; }
         .action-button {
-            flex: 1; padding: 12px; border: 1px solid var(--pastel-border);
-            border-radius: 10px; font-size: 0.82rem; font-weight: 600;
-            cursor: pointer; background: var(--pastel-card); text-align: center;
+            flex: 1; padding: 10px; border: 1px solid var(--pastel-border);
+            border-radius: 6px; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; background: #ffffff; text-align: center;
         }
-        .action-button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .action-button.call-to-action { background: var(--text-main); color: #ffffff; border: none; }
+        .action-button:hover { background: #f8f9fa; }
+        .action-button.call-to-action { background: #212529; color: #ffffff; border: none; }
+        .action-button.call-to-action:hover { background: #000000; }
         
         .app-signature-footer {
-            padding-bottom: 16px;
+            padding-bottom: 14px;
             text-align: center;
-            font-size: 0.78rem;
+            font-size: 0.7rem;
             font-weight: 500;
             color: var(--text-muted);
-            letter-spacing: 0.2px;
         }
-        .app-signature-footer span {
-            color: #ff4d6d;
-        }
+        .app-signature-footer span { color: #e63946; }
 
-        /* --- LIVE PREVIEW WORKSPACE VIEWPORT --- */
+        /* --- LIVE CANVAS VIEWPORT VIEW --- */
         .canvas-viewport {
             flex-grow: 1; padding: 40px; overflow-y: auto;
-            display: flex; justify-content: center; align-items: flex-start;
+            display: flex; flex-direction: column; align-items: center;
+            background-color: #f1f3f5;
         }
 
         .sheet-paper {
-            width: 210mm; min-height: 297mm;
+            width: 210mm; 
+            min-height: 297mm;
+            height: auto; /* Extends dynamically to handle longer resumes */
+            flex-shrink: 0; /* Prevents viewport flex container from compressing paper bounds */
             background: #ffffff;
-            box-shadow: 0 15px 45px rgba(61, 52, 48, 0.04);
-            padding: 24mm; box-sizing: border-box;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            animation: canvasAppear 0.6s ease-out;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 20mm; box-sizing: border-box;
+            transition: font-family 0.2s ease;
+            position: relative;
         }
 
-        @keyframes canvasAppear {
-            from { transform: translateY(15px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        /* --- CENTERED COMPACT PROTECTION BLOCK --- */
+        .canvas-copyright-block {
+            width: 210mm;
+            margin-top: 24px;
+            padding-bottom: 24px;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            flex-shrink: 0;
         }
 
-        /* --- LIVE EDIT REVOLUTIONARY HIGHLIGHT ENGINE --- */
+        /* --- LIVE CANVASES REGISTRY EDIT --- */
         .sheet-paper [contenteditable="true"] {
             outline: none; border-radius: 4px; border: 1px solid transparent;
             padding: 2px 4px; margin: -2px -4px;
-            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .sheet-paper [contenteditable="true"]:hover {
-            background: rgba(var(--resume-primary-rgb, 184, 192, 255), 0.15);
-        }
-        /* Dynamic Highlight Pulse Rules when user interacts */
-        .sheet-paper [contenteditable="true"]:focus,
-        .sheet-paper [contenteditable="true"].ui-highlight-active {
-            background: rgba(var(--resume-primary-rgb, 184, 192, 255), 0.22) !important;
+        .sheet-paper [contenteditable="true"]:hover { background: rgba(33, 150, 243, 0.08); }
+        .sheet-paper [contenteditable="true"]:focus {
+            background: rgba(33, 150, 243, 0.12) !important;
             border-color: var(--resume-primary) !important;
-            box-shadow: 0 0 12px rgba(var(--resume-primary-rgb, 184, 192, 255), 0.4);
-            animation: highlightPulse 2s infinite ease-in-out;
         }
 
-        @keyframes highlightPulse {
-            0%, 100% { opacity: 1; }
-            50% { background: rgba(var(--resume-primary-rgb, 184, 192, 255), 0.32); }
+        .canvas-section-row { position: relative; cursor: grab; }
+        .canvas-section-row:active { cursor: grabbing; }
+        .canvas-section-row.dragging { opacity: 0.3; }
+
+        /* --- GLOBAL UNIFORM SIZING CONFIGURATION MAP --- */
+        .sheet-paper * {
+            font-size: var(--resume-font-size);
+            font-weight: var(--resume-font-weight);
         }
 
-        /* Hidden Section State Macro */
-        .canvas-section-row.section-disabled {
-            display: none !important;
-        }
+        /* --- PRESET TEMPLATES TYPOGRAPHY ARCHITECTURES --- */
+        /* 1. Modern */
+        .type-modern { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .type-modern .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.4); }
+        .type-modern .canvas-name-title { font-size: calc(23pt * var(--resume-multiplier)) !important; font-weight: 700 !important; color: var(--resume-primary); }
+        .type-modern .canvas-section-row { margin-bottom: var(--resume-spacing); }
+        .type-modern .canvas-section-heading { font-weight: 700 !important; text-transform: uppercase; letter-spacing: 0.5px; color: var(--resume-primary); border-bottom: 2px solid var(--resume-primary); padding-bottom: 2px; margin-bottom: 10px; }
 
-        /* --- TYPOGRAPHY VIBE MATRIX ENGINES --- */
-        .type-periwinkle { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .type-periwinkle .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.4); }
-        .type-periwinkle .canvas-name-title { font-size: calc(23pt * var(--resume-multiplier)); font-weight: 700; color: var(--resume-primary); }
-        .type-periwinkle .canvas-section-row { margin-bottom: var(--resume-spacing); }
-        .type-periwinkle .canvas-section-heading { font-size: calc(10.5pt * var(--resume-multiplier)); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--resume-primary); border-bottom: 2px solid var(--resume-primary); padding-bottom: 2px; margin-bottom: 10px; }
+        /* 2. Editorial */
+        .type-editorial { font-family: 'Lora', serif; }
+        .type-editorial .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.5); border-left: 4px solid var(--resume-primary); padding-left: 14px; }
+        .type-editorial .canvas-name-title { font-size: calc(24pt * var(--resume-multiplier)) !important; font-weight: 600 !important; color: var(--resume-primary); }
+        .type-editorial .canvas-section-row { margin-bottom: var(--resume-spacing); }
+        .type-editorial .canvas-section-heading { font-weight: 600 !important; color: var(--resume-primary); border-bottom: 1px dashed var(--resume-primary); padding-bottom: 3px; margin-bottom: 10px; }
 
-        .type-lora { font-family: 'Lora', serif; }
-        .type-lora .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.5); border-left: 4px solid var(--resume-primary); padding-left: 14px; }
-        .type-lora .canvas-name-title { font-size: calc(24pt * var(--resume-multiplier)); font-weight: 600; color: var(--resume-primary); }
-        .type-lora .canvas-section-row { margin-bottom: var(--resume-spacing); }
-        .type-lora .canvas-section-heading { font-size: calc(12pt * var(--resume-multiplier)); font-weight: 600; color: var(--resume-primary); border-bottom: 1px dashed var(--resume-primary); padding-bottom: 3px; margin-bottom: 10px; }
+        /* 3. Technical */
+        .type-technical { font-family: 'Fira Code', monospace; }
+        .type-technical .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.4); }
+        .type-technical .canvas-name-title { font-size: calc(17pt * var(--resume-multiplier)) !important; font-weight: 700 !important; color: var(--resume-primary); }
+        .type-technical .canvas-section-row { margin-bottom: var(--resume-spacing); }
+        .type-technical .canvas-section-heading { font-weight: 600 !important; color: var(--resume-primary); margin-bottom: 8px; }
+        .type-technical .canvas-section-heading::before { content: "» "; color: var(--resume-primary); }
 
-        .type-mono { font-family: 'Fira Code', monospace; font-size: calc(9.5pt * var(--resume-multiplier)); }
-        .type-mono .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.4); }
-        .type-mono .canvas-name-title { font-size: calc(17pt * var(--resume-multiplier)); font-weight: 700; color: var(--resume-primary); }
-        .type-mono .canvas-section-row { margin-bottom: var(--resume-spacing); }
-        .type-mono .canvas-section-heading { font-size: calc(10.5pt * var(--resume-multiplier)); font-weight: 600; color: var(--resume-primary); margin-bottom: 8px; }
-        .type-mono .canvas-section-heading::before { content: "» "; color: var(--resume-primary); }
+        /* 4. Classic */
+        .type-classic { font-family: 'Georgia', serif; }
+        .type-classic .canvas-header-block { text-align: center; margin-bottom: calc(var(--resume-spacing) * 1.8); }
+        .type-classic .canvas-name-title { font-size: calc(22pt * var(--resume-multiplier)) !important; text-transform: uppercase; color: var(--resume-primary); letter-spacing: 1px; }
+        .type-classic .canvas-section-row { margin-bottom: var(--resume-spacing); }
+        .type-classic .canvas-section-heading { font-weight: 700 !important; text-align: center; text-transform: uppercase; color: var(--resume-primary); margin-bottom: 12px; }
 
-        .type-serif { font-family: 'Georgia', serif; }
-        .type-serif .canvas-header-block { text-align: center; margin-bottom: calc(var(--resume-spacing) * 1.8); }
-        .type-serif .canvas-name-title { font-size: calc(22pt * var(--resume-multiplier)); text-transform: uppercase; color: var(--resume-primary); letter-spacing: 1px; }
-        .type-serif .canvas-section-row { margin-bottom: var(--resume-spacing); }
-        .type-serif .canvas-section-heading { font-size: calc(11pt * var(--resume-multiplier)); font-weight: 700; text-align: center; text-transform: uppercase; color: var(--resume-primary); margin-bottom: 12px; }
+        /* 5. Elegant */
+        .type-elegant { font-family: 'Inter', sans-serif; }
+        .type-elegant .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.4); border-bottom: 1px solid var(--pastel-border); padding-bottom: 12px; }
+        .type-elegant .canvas-name-title { font-size: calc(23pt * var(--resume-multiplier)) !important; font-weight: 800 !important; color: var(--resume-primary); letter-spacing: -0.5px; }
+        .type-elegant .canvas-section-row { margin-bottom: var(--resume-spacing); }
+        .type-elegant .canvas-section-heading { font-weight: 700 !important; color: var(--resume-primary); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .type-elegant .canvas-section-heading::after { content: ''; flex-grow: 1; height: 1px; background: var(--pastel-border); }
 
-        .type-inter { font-family: 'Inter', sans-serif; }
-        .type-inter .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.4); border-bottom: 1px solid var(--pastel-border); padding-bottom: 12px; }
-        .type-inter .canvas-name-title { font-size: calc(23pt * var(--resume-multiplier)); font-weight: 800; color: var(--resume-primary); letter-spacing: -0.5px; }
-        .type-inter .canvas-section-row { margin-bottom: var(--resume-spacing); }
-        .type-inter .canvas-section-heading { font-size: calc(11pt * var(--resume-multiplier)); font-weight: 700; color: var(--resume-primary); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-        .type-inter .canvas-section-heading::after { content: ''; flex-grow: 1; height: 1px; background: var(--pastel-border); }
+        /* 6. Minimal */
+        .type-minimal { font-family: 'Inter', sans-serif; letter-spacing: -0.1px; }
+        .type-minimal .canvas-header-block { text-align: var(--resume-align); margin-bottom: calc(var(--resume-spacing) * 1.1); display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--text-main); padding-bottom: 8px; }
+        .type-minimal .canvas-name-title { font-size: calc(20pt * var(--resume-multiplier)) !important; font-weight: 700 !important; color: var(--text-main); text-transform: uppercase; line-height: 1; }
+        .type-minimal .canvas-contact-title { color: var(--text-muted); text-align: right; margin-top: 0; max-width: 50%; }
+        .type-minimal .canvas-section-row { margin-bottom: calc(var(--resume-spacing) * 0.9); }
+        .type-minimal .canvas-section-heading { font-weight: 700 !important; color: var(--resume-primary); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
 
-        /* Standard Structural Canvas Subline Data Sets */
-        .canvas-contact-title { font-size: calc(9.5pt * var(--resume-multiplier)); color: #5c5552; margin-top: 4px; line-height: 1.4; }
+        .canvas-contact-title { color: #5c5552; margin-top: 4px; line-height: 1.4; }
         .data-item-container { margin-bottom: 10px; }
-        .data-flex-row { display: flex; justify-content: space-between; font-weight: 600; font-size: calc(10pt * var(--resume-multiplier)); color: #111; }
-        .data-flex-sub { display: flex; justify-content: space-between; font-style: italic; font-size: calc(9.5pt * var(--resume-multiplier)); color: #555; margin-bottom: 2px; }
-        .data-desc-node { font-size: calc(9.5pt * var(--resume-multiplier)); color: #222; line-height: 1.45; white-space: pre-line; }
-        .data-body-text { font-size: calc(9.5pt * var(--resume-multiplier)); line-height: 1.45; color: #222; white-space: pre-line; }
+        .data-desc-node { color: #222; line-height: 1.45; white-space: pre-line; }
+        .data-body-text { line-height: 1.45; color: #222; }
+        
+        /* Bullet style line configuration mechanics */
+        .bullet-point-line { display: block; margin-bottom: 2px; }
+        .bullet-point-line.bullets-disabled::before { content: "" !important; }
+        .bullet-point-line.bullets-enabled::before { content: "• " !important; }
     </style>
 </head>
 <body>
 
-    <!-- CONTROL SIDEBAR -->
     <div class="sidebar">
         <div class="brand-header">
-            <h1>Resume Builder</h1>
-            <p>Live Interactive Highlight Canvas Engine</p>
+            <h1>Resume Builder Pro</h1>
+            <p>Interactive Architecture & Section Registry</p>
         </div>
 
         <div class="tab-bar">
-            <button class="tab-trigger active" onclick="toggleActiveTab('tab-style', this)">Aesthetics</button>
-            <button class="tab-trigger" onclick="toggleActiveTab('tab-records', this)">Data Node Registry</button>
-            <button class="tab-trigger" onclick="toggleActiveTab('tab-modules', this)">Modules</button>
+            <button class="tab-trigger active" onclick="toggleActiveTab('tab-style', this)">Design</button>
+            <button class="tab-trigger" onclick="toggleActiveTab('tab-records', this)">Content</button>
+            <button class="tab-trigger" onclick="toggleActiveTab('tab-modules', this)">Layout</button>
         </div>
 
         <div class="panels-scroller">
             
-            <!-- PANEL 1: AESTHETIC STYLING MANAGER -->
             <div id="tab-style" class="panel-view active">
-                <div class="label-heading">Typography Blueprint Design Vibe</div>
+                <div class="label-heading">Templates System (6 Available)</div>
                 <div class="grid-matrix">
-                    <div class="aesthetic-card selected" onclick="updateCanvasLayout('type-periwinkle', this)">
-                        <h4>Periwinkle Neo</h4>
-                        <p>Modern Sans-Serif grid balance.</p>
+                    <div class="aesthetic-card selected" onclick="updateCanvasLayout('type-modern', this)">
+                        <h4>Modern</h4>
+                        <p>Clean Neo layout.</p>
                     </div>
-                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-lora', this)">
-                        <h4>Soft Editorial</h4>
-                        <p>Academic Lora serif structure.</p>
+                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-editorial', this)">
+                        <h4>Editorial</h4>
+                        <p>Academic serif vibe.</p>
                     </div>
-                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-mono', this)">
-                        <h4>Modern Grid</h4>
-                        <p>Technical engine monospace lines.</p>
+                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-technical', this)">
+                        <h4>Technical</h4>
+                        <p>Monospace system.</p>
                     </div>
-                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-serif', this)">
-                        <h4>Elegant Classic</h4>
-                        <p>Centered classic literary symmetry.</p>
+                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-classic', this)">
+                        <h4>Classic</h4>
+                        <p>Symmetrical design.</p>
                     </div>
-                    <div class="aesthetic-card" style="grid-column: span 2;" onclick="updateCanvasLayout('type-inter', this)">
-                        <h4>Minimal Slate</h4>
-                        <p>Ultra bold high-contrast clean design layouts.</p>
+                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-elegant', this)">
+                        <h4>Elegant</h4>
+                        <p>High-contrast flow.</p>
+                    </div>
+                    <div class="aesthetic-card" onclick="updateCanvasLayout('type-minimal', this)">
+                        <h4>Minimal</h4>
+                        <p>Compact structure.</p>
                     </div>
                 </div>
 
-                <div class="label-heading">Curated Pastel Color Systems</div>
+                <div class="label-heading">Theme Typography Engine</div>
+                <div class="styling-row-actions">
+                    <label>Base Size:</label>
+                    <select class="styling-select-input" onchange="adjustFontHierarchy('size', this.value)">
+                        <option value="9pt">9pt (Compact)</option>
+                        <option value="10pt" selected>10pt (Standard)</option>
+                        <option value="11pt">11pt (Readable)</option>
+                        <option value="12pt">12pt (Large)</option>
+                    </select>
+                </div>
+                <div class="styling-row-actions">
+                    <label>Global Weight:</label>
+                    <select class="styling-select-input" onchange="adjustFontHierarchy('weight', this.value)">
+                        <option value="300">Light</option>
+                        <option value="400" selected>Regular</option>
+                        <option value="500">Medium</option>
+                        <option value="600">Semi Bold</option>
+                        <option value="700">Bold</option>
+                    </select>
+                </div>
+
+                <div class="label-heading">Theme Color System</div>
                 <div class="palette-matrix">
-                    <div class="pastel-dot active" style="background: #3d3430;" onclick="setThemeAccentColor('#3d3430', this)">Char</div>
+                    <div class="pastel-dot active" style="background: #2196f3;" onclick="setThemeAccentColor('#2196f3', this)">Sky</div>
+                    <div class="pastel-dot" style="background: #3d3430;" onclick="setThemeAccentColor('#3d3430', this)">Char</div>
                     <div class="pastel-dot" style="background: #a2b2c8;" onclick="setThemeAccentColor('#a2b2c8', this)">Slate</div>
                     <div class="pastel-dot" style="background: #b8c0ff;" onclick="setThemeAccentColor('#b8c0ff', this)">Peri</div>
                     <div class="pastel-dot" style="background: #ffd6ff;" onclick="setThemeAccentColor('#ffd6ff', this)">Bloss</div>
-                    <div class="pastel-dot" style="background: #e8f5e9;" onclick="setThemeAccentColor('#e8f5e9', this)">Mint</div>
                     <div class="pastel-dot" style="background: #faedcd;" onclick="setThemeAccentColor('#faedcd', this)">Sand</div>
                     <div class="pastel-dot" style="background: #ffd8be;" onclick="setThemeAccentColor('#ffd8be', this)">Peach</div>
                     <div class="pastel-dot" style="background: #ffadad;" onclick="setThemeAccentColor('#ffadad', this)">Rose</div>
                     <div class="pastel-dot" style="background: #fdffb6;" onclick="setThemeAccentColor('#fdffb6', this)">Straw</div>
                     <div class="pastel-dot" style="background: #caffbf;" onclick="setThemeAccentColor('#caffbf', this)">Basil</div>
-                    <div class="pastel-dot" style="background: #9bf6ff;" onclick="setThemeAccentColor('#9bf6ff', this)">Sky</div>
+                    <div class="pastel-dot" style="background: #e8f5e9;" onclick="setThemeAccentColor('#e8f5e9', this)">Mint</div>
                     <div class="pastel-dot" style="background: #a0c4ff;" onclick="setThemeAccentColor('#a0c4ff', this)">Ocean</div>
                 </div>
 
                 <div class="custom-picker-row">
-                    <label>Or Mix Custom Accent Vibe Code:</label>
-                    <input type="color" class="native-picker" value="#b8c0ff" oninput="setThemeAccentColor(this.value, null)">
+                    <label>Custom Accent Color Code:</label>
+                    <input type="color" id="native-hex-picker" class="native-picker" value="#2196f3" oninput="setThemeAccentColor(this.value, null)">
                 </div>
 
-                <div class="label-heading">Structural Geometry Mapping</div>
-                <div class="slider-wrapper" style="margin-bottom:12px;">
-                    <label style="font-size:0.75rem; font-weight:600;">Text Scale: <span id="lbl-scale">1.00x</span></label>
-                    <input type="range" min="0.75" max="1.25" step="0.05" value="1" oninput="adjustCanvasGeometry('scale', this.value)">
+                <div class="label-heading">Layout Dimensions</div>
+                <div class="slider-wrapper">
+                    <label style="font-size:0.75rem; font-weight:600;">Layout Scale Width: <span id="lbl-scale">1.00x</span></label>
+                    <input type="range" id="slider-scale" class="theme-slider" min="0.75" max="1.25" step="0.05" value="1" oninput="adjustCanvasGeometry('scale', this.value)">
                 </div>
-                <div class="slider-wrapper" style="margin-bottom:12px;">
-                    <label style="font-size:0.75rem; font-weight:600;">Spacings: <span id="lbl-space">16px</span></label>
-                    <input type="range" min="8" max="26" step="2" value="16" oninput="adjustCanvasGeometry('spacing', this.value)">
+                <div class="slider-wrapper">
+                    <label style="font-size:0.75rem; font-weight:600;">Row Spacings: <span id="lbl-space">16px</span></label>
+                    <input type="range" id="slider-spacing" class="theme-slider" min="8" max="26" step="2" value="16" oninput="adjustCanvasGeometry('spacing', this.value)">
                 </div>
 
-                <div class="label-heading">Header Text Alignment Align</div>
+                <div class="label-heading">Header Text Align</div>
                 <div style="display:flex; gap:8px;">
                     <button class="action-button" style="padding:6px; font-size:0.75rem;" onclick="adjustCanvasGeometry('align', 'left')">Left</button>
                     <button class="action-button" style="padding:6px; font-size:0.75rem;" onclick="adjustCanvasGeometry('align', 'center')">Center</button>
@@ -466,80 +611,30 @@
                 </div>
             </div>
 
-            <!-- PANEL 2: COMPILER DATA REGISTRY ENTRIES -->
             <div id="tab-records" class="panel-view">
-                <div class="label-heading">Primary Coordinates</div>
+                <div class="label-heading">Primary Core Information</div>
                 <div class="input-group-element">
-                    <label>Full Name Header</label>
-                    <input type="text" id="in-name" value="Rowan Avery" onfocus="triggerUiFieldHighlight('canvas-name-target')" onblur="removeUiFieldHighlight('canvas-name-target')" oninput="syncInputToCanvas('canvas-name-target', this.value)">
+                    <label>Full Name</label>
+                    <input type="text" id="in-name" value="Rowan Avery" oninput="syncInputToCanvas('canvas-name-target', this.value)">
                 </div>
                 <div class="input-group-element">
-                    <label>Contact Substrings</label>
-                    <input type="text" id="in-contact" value="rowan.avery@email.com | +1 (555) 019-2834 | San Francisco, CA" onfocus="triggerUiFieldHighlight('canvas-contact-target')" onblur="removeUiFieldHighlight('canvas-contact-target')" oninput="syncInputToCanvas('canvas-contact-target', this.value)">
+                    <label>Contact Info Lines</label>
+                    <input type="text" id="in-contact" value="rowan.avery@email.com | +1 (555) 019-2834 | San Francisco, CA" oninput="syncInputToCanvas('canvas-contact-target', this.value)">
                 </div>
 
-                <div class="label-heading">Executive Summary</div>
-                <div class="input-group-element">
-                    <textarea id="in-summary" rows="3" onfocus="triggerUiFieldHighlight('canvas-summary-target')" onblur="removeUiFieldHighlight('canvas-summary-target')" oninput="syncInputToCanvas('canvas-summary-target', this.value)">Performance-driven professional specializing in clean structural design systems and optimized layout architectures. Experienced in building compliant and aesthetic framework configurations.</textarea>
-                </div>
-
-                <div class="label-heading">
-                    <span>Experience History</span>
-                    <button onclick="appendExperienceBlock()" style="background:none; border:none; color:var(--text-main); font-weight:700; cursor:pointer; font-size:0.78rem;">+ Add Block</button>
-                </div>
-                <div id="input-group-experience"></div>
-
-                <div class="label-heading">
-                    <span>Education Ledger</span>
-                    <button onclick="appendEducationBlock()" style="background:none; border:none; color:var(--text-main); font-weight:700; cursor:pointer; font-size:0.78rem;">+ Add Block</button>
-                </div>
-                <div id="input-group-education"></div>
-
-                <div class="label-heading">Core Skills Array</div>
-                <div class="input-group-element">
-                    <input type="text" id="in-skills" value="System Engineering, Figma UI, HTML5 Semantic Matrix, Scaled Optimization Metrics" onfocus="triggerUiFieldHighlight('canvas-skills-target')" onblur="removeUiFieldHighlight('canvas-skills-target')" oninput="syncInputToCanvas('canvas-skills-target', this.value)">
-                </div>
+                <div id="dynamic-accordions-content-root" style="margin-top: 20px;"></div>
             </div>
 
-            <!-- PANEL 3: MODULAR STRUCTURAL TOGGLES -->
             <div id="tab-modules" class="panel-view">
-                <div class="label-heading">Toggle & Customize Modules</div>
-                
-                <div class="toggle-row">
-                    <span>Include Projects Section</span>
-                    <input type="checkbox" checked class="switch-input" onchange="toggleModuleVisibility('mod-projects', this.checked)">
-                </div>
-                <div class="input-group-element" style="margin-bottom:16px;">
-                    <label>Project Details Body</label>
-                    <textarea id="in-projects" rows="3" onfocus="triggerUiFieldHighlight('canvas-projects-target')" onblur="removeUiFieldHighlight('canvas-projects-target')" oninput="syncInputToCanvas('canvas-projects-target', this.value)">• AuraSuite Engine — Built high-fidelity modular layout configuration maps using client rendering engines.&#10;• Matrix Schema — Designed optimized relational metadata databases parsing global ATS system criteria smoothly.</textarea>
-                </div>
+                <div class="label-heading">Add Modular Structures</div>
+                <button class="append-node-btn" onclick="addNewGenericSection()">+ Create New Custom Section</button>
 
-                <div class="toggle-row">
-                    <span>Include Certifications</span>
-                    <input type="checkbox" checked class="switch-input" onchange="toggleModuleVisibility('mod-certs', this.checked)">
-                </div>
-                <div class="input-group-element" style="margin-bottom:16px;">
-                    <label>Certificates Body Text</label>
-                    <input type="text" id="in-certs" value="Certified Cloud Systems Designer (2025) | Interaction Architect Expert Frameworks (2024)" onfocus="triggerUiFieldHighlight('canvas-certs-target')" onblur="removeUiFieldHighlight('canvas-certs-target')" oninput="syncInputToCanvas('canvas-certs-target', this.value)">
-                </div>
-
-                <div class="toggle-row">
-                    <span>Include Custom Section</span>
-                    <input type="checkbox" id="check-custom" class="switch-input" onchange="toggleModuleVisibility('mod-custom', this.checked)">
-                </div>
-                <div class="input-group-element">
-                    <label>Custom Section Header Title</label>
-                    <input type="text" id="in-custom-title" value="Honors & Awards" onfocus="triggerUiFieldHighlight('canvas-custom-heading')" onblur="removeUiFieldHighlight('canvas-custom-heading')" oninput="syncInputToCanvas('canvas-custom-heading', this.value)">
-                </div>
-                <div class="input-group-element">
-                    <label>Custom Section Content</label>
-                    <textarea id="in-custom-body" rows="2" onfocus="triggerUiFieldHighlight('canvas-custom-target')" onblur="removeUiFieldHighlight('canvas-custom-target')" oninput="syncInputToCanvas('canvas-custom-target', this.value)">• Winner of International Aesthetic Interface Compilers Challenge (2025)&#10;• Published Author of Minimal Layer Optimization Metrics Ledger.</textarea>
-                </div>
+                <div class="label-heading">Arrangement Blueprint Map (Drag to Reorder)</div>
+                <div id="section-order-registry-container"></div>
             </div>
 
         </div>
 
-        <!-- FOOTER ACTIONS AND BRAND ATTRIBUTION CONTAINER -->
         <div class="sidebar-footer-container">
             <div class="dock-footer">
                 <button class="action-button" onclick="triggerWordExport()">Export DOCX</button>
@@ -551,71 +646,68 @@
         </div>
     </div>
 
-    <!-- CANVAS VIEWSPACE WORKSPACE -->
     <div class="canvas-viewport">
-        <div id="canvasSheetEntity" class="sheet-paper type-periwinkle">
+        <div id="canvasSheetEntity" class="sheet-paper type-modern">
             
-            <!-- Identity Header Block -->
-            <div class="canvas-header-block" id="block-header-node" onfocusin="triggerUiFieldHighlight('block-header-node')" onfocusout="removeUiFieldHighlight('block-header-node')">
-                <div id="canvas-name-target" class="canvas-name-title" contenteditable="true" onblur="syncCanvasToInputControl('in-name', this.innerText)">Rowan Avery</div>
-                <div id="canvas-contact-target" class="canvas-contact-title" contenteditable="true" onblur="syncCanvasToInputControl('in-contact', this.innerText)">rowan.avery@email.com | +1 (555) 019-2834 | San Francisco, CA</div>
+            <div class="canvas-header-block" id="block-header-node">
+                <div id="canvas-name-target" class="canvas-name-title" contenteditable="true" onblur="syncCanvasTextToMap('name', this.innerText)">Rowan Avery</div>
+                <div id="canvas-contact-target" class="canvas-contact-title" contenteditable="true" onblur="syncCanvasTextToMap('contact', this.innerText)">rowan.avery@email.com | +1 (555) 019-2834 | San Francisco, CA</div>
             </div>
 
-            <!-- Profile Summary Section -->
-            <div class="canvas-section-row" id="block-summary-node" onfocusin="triggerUiFieldHighlight('block-summary-node')" onfocusout="removeUiFieldHighlight('block-summary-node')">
-                <div class="canvas-section-heading" contenteditable="true">Professional Summary</div>
-                <div id="canvas-summary-target" class="data-body-text" contenteditable="true" onblur="syncCanvasToInputControl('in-summary', this.innerText)">Performance-driven professional specializing in clean structural design systems and optimized layout architectures. Experienced in building compliant and aesthetic framework configurations.</div>
-            </div>
+            <div id="dynamic-sections-drop-root"></div>
 
-            <!-- Experience Entry Target Block -->
-            <div class="canvas-section-row" id="block-experience-node" onfocusin="triggerUiFieldHighlight('block-experience-node')" onfocusout="removeUiFieldHighlight('block-experience-node')">
-                <div class="canvas-section-heading" contenteditable="true">Professional Experience</div>
-                <div id="canvas-experience-entry-root"></div>
-            </div>
+        </div>
 
-            <!-- Education Entry Target Block -->
-            <div class="canvas-section-row" id="block-education-node" onfocusin="triggerUiFieldHighlight('block-education-node')" onfocusout="removeUiFieldHighlight('block-education-node')">
-                <div class="canvas-section-heading" contenteditable="true">Education</div>
-                <div id="canvas-education-entry-root"></div>
-            </div>
-
-            <!-- Projects Dynamic Module Section -->
-            <div class="canvas-section-row" id="mod-projects" onfocusin="triggerUiFieldHighlight('mod-projects')" onfocusout="removeUiFieldHighlight('mod-projects')">
-                <div class="canvas-section-heading" contenteditable="true">Key Projects</div>
-                <div id="canvas-projects-target" class="data-body-text" contenteditable="true" onblur="syncCanvasToInputControl('in-projects', this.innerText)">• AuraSuite Engine — Built high-fidelity modular layout configuration maps using client rendering engines.&#10;• Matrix Schema — Designed optimized relational metadata databases parsing global ATS system criteria smoothly.</div>
-            </div>
-
-            <!-- Certifications Module Section -->
-            <div class="canvas-section-row" id="mod-certs" onfocusin="triggerUiFieldHighlight('mod-certs')" onfocusout="removeUiFieldHighlight('mod-certs')">
-                <div class="canvas-section-heading" contenteditable="true">Certifications</div>
-                <div id="canvas-certs-target" class="data-body-text" contenteditable="true" onblur="syncCanvasToInputControl('in-certs', this.innerText)">Certified Cloud Systems Designer (2025) | Interaction Architect Expert Frameworks (2024)</div>
-            </div>
-
-            <!-- Completely Custom Variable Module Section -->
-            <div class="canvas-section-row section-disabled" id="mod-custom" onfocusin="triggerUiFieldHighlight('mod-custom')" onfocusout="removeUiFieldHighlight('mod-custom')">
-                <div id="canvas-custom-heading" class="canvas-section-heading" contenteditable="true" onblur="syncCanvasToInputControl('in-custom-title', this.innerText)">Honors & Awards</div>
-                <div id="canvas-custom-target" class="data-body-text" contenteditable="true" onblur="syncCanvasToInputControl('in-custom-body', this.innerText)">• Winner of International Aesthetic Interface Compilers Challenge (2025)&#10;• Published Author of Minimal Layer Optimization Metrics Ledger.</div>
-            </div>
-
-            <!-- Skills Static Root Node -->
-            <div class="canvas-section-row" id="block-skills-node" onfocusin="triggerUiFieldHighlight('block-skills-node')" onfocusout="removeUiFieldHighlight('block-skills-node')">
-                <div class="canvas-section-heading" contenteditable="true">Skills & Expertise</div>
-                <div id="canvas-skills-target" class="data-body-text" contenteditable="true" onblur="syncCanvasToInputControl('in-skills', this.innerText)">System Engineering, Figma UI, HTML5 Semantic Matrix, Scaled Optimization Metrics</div>
-            </div>
-
+        <div class="canvas-copyright-block">
+            &copy; 2026 ROWAN AVERY. ALL RIGHTS RESERVED. COPYING PROHIBITED BY APPLICABLE LAW.
         </div>
     </div>
 
-    <!-- SCRIPT INFRASTRUCTURE INTERACTION LAYER -->
     <script>
-        // Core Reactive Structural Data Collections State
-        let expStateList = JSON.parse(localStorage.getItem('as_exp_state')) || [
-            { id: 401, role: "Senior UX Solutions Designer", firm: "Studio Analytics / SF", timeline: "2024 - Present", bullets: "• Supervised data interface visual logic deployment matrices.\n• Optimized layout asset delivery configurations by 14%." }
+        // Global section map configuration settings tracking layout
+        let activeSectionsMap = [
+            { key: 'summary', name: 'Professional Summary', useBullets: true },
+            { key: 'experience', name: 'Professional Experience', useBullets: true },
+            { key: 'education', name: 'Education', useBullets: false },
+            { key: 'projects', name: 'Key Projects', useBullets: true },
+            { key: 'certs', name: 'Certifications', useBullets: true },
+            { key: 'skills', name: 'Skills & Expertise', useBullets: false },
+            { key: 'custom', name: 'Honors & Awards', useBullets: true }
         ];
 
-        let eduStateList = JSON.parse(localStorage.getItem('as_edu_state')) || [
+        // Array-based structured store ensuring modular addition/deletion of individual bullet lines
+        let staticValuesMap = {
+            summary: [
+                "Performance-driven professional specializing in clean structural design systems.",
+                "Experienced in building compliant, optimized, and aesthetic framework configurations."
+            ],
+            projects: [
+                "AuraSuite Engine — Built high-fidelity modular layout configuration maps using client rendering engines.",
+                "Matrix Schema — Designed optimized relational metadata databases parsing global ATS system criteria smoothly."
+            ],
+            certs: [
+                "Certified Cloud Systems Designer (2025)",
+                "Interaction Architect Expert Frameworks (2024)"
+            ],
+            skills: [
+                "System Engineering & Modular UI Architecture Architecture",
+                "Figma Workflow Management, Semantic Frameworks, Optimization Metrics"
+            ],
+            custom: [
+                "Winner of International Aesthetic Interface Compilers Challenge (2025)",
+                "Published Author of Minimal Layer Optimization Metrics Ledger."
+            ]
+        };
+
+        let expStateList = [
+            { id: 401, role: "Senior UX Solutions Designer", firm: "Studio Analytics / SF", timeline: "2024 - Present", bullets: "Supervised data interface visual logic deployment matrices.\nOptimized layout asset delivery configurations by 14%." }
+        ];
+
+        let eduStateList = [
             { id: 501, degree: "B.S. in Interaction Systems Engineering", school: "Design Institute of California", timeline: "2022" }
         ];
+
+        let currentlyExpandedKey = null;
 
         function toggleActiveTab(panelId, eventTrigger) {
             document.querySelectorAll('.tab-trigger').forEach(el => el.classList.remove('active'));
@@ -630,12 +722,29 @@
             document.getElementById('canvasSheetEntity').className = `sheet-paper ${vibeClass}`;
         }
 
-        // Color Converter Utility to compute overlay alpha channels dynamically
-        function convertHexToRgbChannels(hex) {
-            hex = hex.replace('#', '');
-            if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
-            const intVal = parseInt(hex, 16);
-            return `${(intVal >> 16) & 255}, ${(intVal >> 8) & 255}, ${intVal & 255}`;
+        function adjustFontHierarchy(type, value) {
+            if(type === 'size') {
+                document.documentElement.style.setProperty('--resume-font-size', value);
+            } else if(type === 'weight') {
+                document.documentElement.style.setProperty('--resume-font-weight', value);
+            }
+        }
+
+        // Refreshes the native slider filling progression background track dynamically
+        function repaintSliderFilledTrack() {
+            const currentAccent = getComputedStyle(document.documentElement).getPropertyValue('--resume-primary').trim();
+            
+            const scaleSl = document.getElementById('slider-scale');
+            if (scaleSl) {
+                const pctScale = ((scaleSl.value - scaleSl.min) / (scaleSl.max - scaleSl.min)) * 100;
+                scaleSl.style.background = `linear-gradient(to right, ${currentAccent} 0%, ${currentAccent} ${pctScale}%, #e9ecef ${pctScale}%, #e9ecef 100%)`;
+            }
+
+            const spaceSl = document.getElementById('slider-spacing');
+            if (spaceSl) {
+                const pctSpace = ((spaceSl.value - spaceSl.min) / (spaceSl.max - spaceSl.min)) * 100;
+                spaceSl.style.background = `linear-gradient(to right, ${currentAccent} 0%, ${currentAccent} ${pctSpace}%, #e9ecef ${pctSpace}%, #e9ecef 100%)`;
+            }
         }
 
         function setThemeAccentColor(hexVal, activeDotRef) {
@@ -643,8 +752,14 @@
                 document.querySelectorAll('.pastel-dot').forEach(d => d.classList.remove('active'));
                 activeDotRef.classList.add('active');
             }
+            document.getElementById('native-hex-picker').value = hexVal;
             document.documentElement.style.setProperty('--resume-primary', hexVal);
-            document.documentElement.style.setProperty('--resume-primary-rgb', convertHexToRgbChannels(hexVal));
+            
+            document.querySelectorAll('.accordion-trigger-header span').forEach(el => {
+                el.style.color = hexVal;
+            });
+
+            repaintSliderFilledTrack();
         }
 
         function adjustCanvasGeometry(mode, factor) {
@@ -657,168 +772,581 @@
             } else if(mode === 'align') {
                 document.documentElement.style.setProperty('--resume-align', factor);
             }
+            repaintSliderFilledTrack();
         }
 
-        // --- INTERACTIVE PULSING HIGHLIGHT UTILITIES ---
-        function triggerUiFieldHighlight(elementId) {
-            const node = document.getElementById(elementId);
-            if(node) node.classList.add('ui-highlight-active');
+        function syncInputToCanvas(canvasId, text) {
+            const node = document.getElementById(canvasId);
+            if(node) node.innerText = text;
         }
 
-        function removeUiFieldHighlight(elementId) {
-            const node = document.getElementById(elementId);
-            if(node) node.classList.remove('ui-highlight-active');
+        function syncCanvasTextToMap(type, value) {
+            if(type === 'name') document.getElementById('in-name').value = value;
+            if(type === 'contact') document.getElementById('in-contact').value = value;
         }
 
-        function toggleModuleVisibility(moduleId, isChecked) {
-            const targetNode = document.getElementById(moduleId);
-            if(targetNode) {
-                if(isChecked) {
-                    targetNode.classList.remove('section-disabled');
-                    triggerUiFieldHighlight(moduleId);
-                    setTimeout(() => removeUiFieldHighlight(moduleId), 1200);
+        function syncCanvasHeadingToMap(key, newName) {
+            let found = activeSectionsMap.find(x => x.key === key);
+            if(found) {
+                found.name = newName;
+                buildSectionInterfaceControls();
+                renderCleanAccordionsContentEngine();
+            }
+        }
+
+        function toggleBulletConfiguration(key, isEnabled) {
+            let section = activeSectionsMap.find(x => x.key === key);
+            if(section) {
+                section.useBullets = isEnabled;
+                if(key === 'experience') {
+                    renderExperienceEngine();
                 } else {
-                    targetNode.classList.add('section-disabled');
+                    renderCanvasSectionList(key);
                 }
             }
         }
 
-        // Sync inputs securely 
-        function syncInputToCanvas(canvasId, text) {
-            document.getElementById(canvasId).innerText = text;
-            autoSaveStateToLocalStorage();
+        // Parses editable bullet nodes back into lists upon focus loss
+        function parseCanvasBulletsToData(key) {
+            const target = document.getElementById(`canvas-${key}-target`);
+            if(!target) return;
+            const lines = [];
+            target.querySelectorAll('.bullet-point-line').forEach(el => {
+                let cleanStr = el.innerText.trim();
+                if(cleanStr) lines.push(cleanStr);
+            });
+            staticValuesMap[key] = lines;
+            
+            if(currentlyExpandedKey === key) {
+                renderBulletInputsFormBlock(key);
+            }
         }
 
-        function syncCanvasToInputControl(inputId, text) {
-            document.getElementById(inputId).value = text;
-            autoSaveStateToLocalStorage();
+        /* --- BULLET MUTATION METHODS --- */
+        function updateBulletValue(key, idx, val) {
+            staticValuesMap[key][idx] = val;
+            renderCanvasSectionList(key);
         }
 
-        // Experience Block Compilers Array 
+        function appendNewBulletItem(key) {
+            if(!staticValuesMap[key]) staticValuesMap[key] = [];
+            staticValuesMap[key].push("New customizable line entry profile description.");
+            renderBulletInputsFormBlock(key);
+            renderCanvasSectionList(key);
+        }
+
+        function deleteBulletItem(key, idx) {
+            staticValuesMap[key].splice(idx, 1);
+            renderBulletInputsFormBlock(key);
+            renderCanvasSectionList(key);
+        }
+
+        function renderCanvasSectionList(key) {
+            const tgt = document.getElementById(`canvas-${key}-target`);
+            if(!tgt) return;
+            const lines = staticValuesMap[key] || [];
+            const section = activeSectionsMap.find(x => x.key === key);
+            const styleClass = (section && section.useBullets) ? 'bullets-enabled' : 'bullets-disabled';
+
+            tgt.innerHTML = lines.map(l => `<span class="bullet-point-line ${styleClass}" contenteditable="true">${l}</span>`).join('');
+        }
+
+        function mutateExperienceData(id, key, val, fromCanvas = false) {
+            let record = expStateList.find(x => x.id === id);
+            if(record) {
+                record[key] = val;
+                if (!fromCanvas) {
+                    rebuildExperienceCanvasElement(id);
+                } else {
+                    const inputField = document.getElementById(`in-exp-${key}-${id}`);
+                    if(inputField) inputField.value = val;
+                }
+            }
+        }
+
+        function rebuildExperienceCanvasElement(id) {
+            const block = document.querySelector(`[data-exp-id="${id}"]`);
+            if(!block) return;
+            let record = expStateList.find(x => x.id === id);
+            if(!record) return;
+
+            block.querySelector('.exp-role').innerText = record.role;
+            block.querySelector('.exp-timeline').innerText = record.timeline;
+            block.querySelector('.exp-firm').innerText = record.firm;
+
+            const section = activeSectionsMap.find(x => x.key === 'experience');
+            const styleClass = (section && section.useBullets) ? 'bullets-enabled' : 'bullets-disabled';
+            const bulletContainer = block.querySelector('.exp-bullets-container');
+            
+            const lines = record.bullets.split('\n');
+            bulletContainer.innerHTML = lines.map(l => `<span class="bullet-point-line ${styleClass}">${l}</span>`).join('');
+        }
+
+        function mutateEducationData(id, key, val, fromCanvas = false) {
+            let record = eduStateList.find(x => x.id === id);
+            if(record) {
+                record[key] = val;
+                if (!fromCanvas) {
+                    const block = document.querySelector(`[data-edu-id="${id}"]`);
+                    if(block) {
+                        if(key === 'degree') block.querySelector('.edu-degree').innerText = val;
+                        if(key === 'timeline') block.querySelector('.edu-timeline').innerText = val;
+                        if(key === 'school') block.querySelector('.edu-school').innerText = val;
+                    }
+                } else {
+                    const inputField = document.getElementById(`in-edu-${key}-${id}`);
+                    if(inputField) inputField.value = val;
+                }
+            }
+        }
+
+        /* --- BLUEPRINT MASTER SYSTEM ENGINE --- */
+        function rebuildCanvasSectionFlow() {
+            const dropRoot = document.getElementById('dynamic-sections-drop-root');
+            dropRoot.innerHTML = '';
+
+            activeSectionsMap.forEach(secObj => {
+                const sectionNode = document.createElement('div');
+                sectionNode.className = 'canvas-section-row';
+                sectionNode.setAttribute('data-sec-key', secObj.key);
+                
+                if (secObj.key === 'experience') {
+                    sectionNode.innerHTML = `
+                        <div class="canvas-section-heading" contenteditable="true" onblur="syncCanvasHeadingToMap('experience', this.innerText)">${secObj.name}</div>
+                        <div id="canvas-experience-entry-root"></div>
+                    `;
+                } else if (secObj.key === 'education') {
+                    sectionNode.innerHTML = `
+                        <div class="canvas-section-heading" contenteditable="true" onblur="syncCanvasHeadingToMap('education', this.innerText)">${secObj.name}</div>
+                        <div id="canvas-education-entry-root"></div>
+                    `;
+                } else {
+                    sectionNode.innerHTML = `
+                        <div class="canvas-section-heading" contenteditable="true" onblur="syncCanvasHeadingToMap('${secObj.key}', this.innerText)">${secObj.name}</div>
+                        <div id="canvas-${secObj.key}-target" class="data-body-text" onblur="parseCanvasBulletsToData('${secObj.key}')"></div>
+                    `;
+                }
+                
+                dropRoot.appendChild(sectionNode);
+                if (secObj.key !== 'experience' && secObj.key !== 'education') {
+                    renderCanvasSectionList(secObj.key);
+                }
+            });
+
+            renderExperienceEngine();
+            renderEducationEngine();
+            buildSectionInterfaceControls();
+            renderCleanAccordionsContentEngine();
+            initDragAndDropSystem();
+            repaintSliderFilledTrack();
+        }
+
+        function buildSectionInterfaceControls() {
+            const container = document.getElementById('section-order-registry-container');
+            container.innerHTML = '';
+
+            activeSectionsMap.forEach((sec, idx) => {
+                const card = document.createElement('div');
+                card.className = 'section-order-card';
+                card.setAttribute('draggable', 'true');
+                card.setAttribute('data-index', idx);
+                card.innerHTML = `
+                    <span>${sec.name}</span>
+                    <button class="control-mini-btn delete-btn" onclick="removeSectionEntirely(${idx}); event.stopPropagation();">✕</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderCleanAccordionsContentEngine() {
+            const root = document.getElementById('dynamic-accordions-content-root');
+            if(!root) return;
+            root.innerHTML = '';
+            const activeAccentColor = getComputedStyle(document.documentElement).getPropertyValue('--resume-primary').trim();
+
+            activeSectionsMap.forEach(sec => {
+                const wrapper = document.createElement('div');
+                wrapper.className = `accordion-wrapper ${currentlyExpandedKey === sec.key ? 'expanded' : ''}`;
+                wrapper.setAttribute('data-accordion-key', sec.key);
+
+                const header = document.createElement('button');
+                header.className = 'accordion-trigger-header';
+                header.onclick = () => toggleAccordionBlock(sec.key);
+                header.innerHTML = `
+                    <span style="color: ${activeAccentColor}">${sec.name}</span>
+                    <div class="accordion-icon-marker">▼</div>
+                `;
+
+                const body = document.createElement('div');
+                body.className = 'accordion-panel-body';
+                body.setAttribute('id', `accordion-panel-body-${sec.key}`);
+                
+                wrapper.appendChild(header);
+                wrapper.appendChild(body);
+                root.appendChild(wrapper);
+
+                if(currentlyExpandedKey === sec.key) {
+                    fillAccordionBodyMarkup(sec.key);
+                }
+            });
+        }
+
+        function fillAccordionBodyMarkup(key) {
+            const body = document.getElementById(`accordion-panel-body-${key}`);
+            if(!body) return;
+            body.innerHTML = '';
+
+            const section = activeSectionsMap.find(x => x.key === key);
+            const checkedState = (section && section.useBullets) ? 'checked' : '';
+
+            // Interactive bullet list visibility management toggle control row
+            const toggleRow = `
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; background:#fff; padding:8px; border-radius:6px; border:1px solid var(--pastel-border);">
+                    <input type="checkbox" id="bullet-toggle-${key}" ${checkedState} onchange="toggleBulletConfiguration('${key}', this.checked)">
+                    <label for="bullet-toggle-${key}" style="font-size:0.75rem; font-weight:600; cursor:pointer;">Enable Bullet Point Layout Formatting</label>
+                </div>
+            `;
+
+            if(key === 'experience') {
+                body.innerHTML = toggleRow + `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <label style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Positions Registry</label>
+                        <button onclick="appendExperienceBlock()" class="control-mini-btn" style="color:var(--resume-primary);">+ Add Position</button>
+                    </div>
+                    <div id="accordion-sub-experience-root"></div>
+                `;
+                renderSubExperienceFormFields();
+            } 
+            else if(key === 'education') {
+                body.innerHTML = toggleRow + `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <label style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Degrees Registry</label>
+                        <button onclick="appendEducationBlock()" class="control-mini-btn" style="color:var(--resume-primary);">+ Add Degree</button>
+                    </div>
+                    <div id="accordion-sub-education-root"></div>
+                `;
+                renderSubEducationFormFields();
+            } 
+            else {
+                body.innerHTML = toggleRow + `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <label style="font-size:0.68rem; font-weight:700; color:var(--text-muted);">Manage Individual Line Bullets</label>
+                        <button onclick="appendNewBulletItem('${key}')" class="control-mini-btn" style="color:var(--resume-primary);">+ Add Bullet</button>
+                    </div>
+                    <div id="bullet-fields-root-${key}"></div>
+                `;
+                renderBulletInputsFormBlock(key);
+            }
+        }
+
+        function renderBulletInputsFormBlock(key) {
+            const target = document.getElementById(`bullet-fields-root-${key}`);
+            if(!target) return;
+            target.innerHTML = '';
+            const lines = staticValuesMap[key] || [];
+            lines.forEach((line, idx) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'bullet-input-wrapper';
+                wrapper.innerHTML = `
+                    <input type="text" value="${line.replace(/"/g, '&quot;')}" oninput="updateBulletValue('${key}', ${idx}, this.value)">
+                    <button class="control-mini-btn delete-btn" onclick="deleteBulletItem('${key}', ${idx})">✕</button>
+                `;
+                target.appendChild(wrapper);
+            });
+        }
+
+        function toggleAccordionBlock(key) {
+            currentlyExpandedKey = (currentlyExpandedKey === key) ? null : key;
+            document.querySelectorAll('.accordion-wrapper').forEach(w => {
+                const wKey = w.getAttribute('data-accordion-key');
+                if(wKey === currentlyExpandedKey) {
+                    w.classList.add('expanded');
+                    fillAccordionBodyMarkup(wKey);
+                } else {
+                    w.classList.remove('expanded');
+                }
+            });
+        }
+
+        function renderSubExperienceFormFields() {
+            const target = document.getElementById('accordion-sub-experience-root');
+            if(!target) return;
+            target.innerHTML = '';
+            expStateList.forEach(item => {
+                const d = document.createElement('div');
+                d.className = 'dynamic-node-card';
+                d.innerHTML = `
+                    <button class="trash-action" onclick="deleteExperienceBlock(${item.id})">Remove</button>
+                    <div class="input-group-element"><label>Role Title</label><input type="text" id="in-exp-role-${item.id}" value="${item.role}" oninput="mutateExperienceData(${item.id}, 'role', this.value)"></div>
+                    <div class="input-group-element"><label>Company / Firm</label><input type="text" id="in-exp-firm-${item.id}" value="${item.firm}" oninput="mutateExperienceData(${item.id}, 'firm', this.value)"></div>
+                    <div class="input-group-element"><label>Timeline</label><input type="text" id="in-exp-timeline-${item.id}" value="${item.timeline}" oninput="mutateExperienceData(${item.id}, 'timeline', this.value)"></div>
+                    <div class="input-group-element"><label>Bullets (New line per bullet)</label><textarea id="in-exp-bullets-${item.id}" rows="3" oninput="mutateExperienceData(${item.id}, 'bullets', this.value)">${item.bullets}</textarea></div>
+                `;
+                target.appendChild(d);
+            });
+        }
+
+        function renderSubEducationFormFields() {
+            const target = document.getElementById('accordion-sub-education-root');
+            if(!target) return;
+            target.innerHTML = '';
+            eduStateList.forEach(item => {
+                const d = document.createElement('div');
+                d.className = 'dynamic-node-card';
+                d.innerHTML = `
+                    <button class="trash-action" onclick="deleteEducationBlock(${item.id})">Remove</button>
+                    <div class="input-group-element"><label>Degree / Program</label><input type="text" id="in-edu-degree-${item.id}" value="${item.degree}" oninput="mutateEducationData(${item.id}, 'degree', this.value)"></div>
+                    <div class="input-group-element"><label>Institution / School</label><input type="text" id="in-edu-school-${item.id}" value="${item.school}" oninput="mutateEducationData(${item.id}, 'school', this.value)"></div>
+                    <div class="input-group-element"><label>Timeline Year</label><input type="text" id="in-edu-timeline-${item.id}" value="${item.timeline}" oninput="mutateEducationData(${item.id}, 'timeline', this.value)"></div>
+                `;
+                target.appendChild(d);
+            });
+        }
+
+        /* --- DRAG & DROP MATRIX --- */
+        function initDragAndDropSystem() {
+            const leftContainer = document.getElementById('section-order-registry-container');
+            let draggedIndex = null;
+
+            leftContainer.querySelectorAll('.section-order-card').forEach(card => {
+                card.addEventListener('dragstart', () => {
+                    draggedIndex = parseInt(card.getAttribute('data-index'));
+                    card.classList.add('dragging');
+                });
+                card.addEventListener('dragend', () => card.classList.remove('dragging'));
+            });
+
+            leftContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(leftContainer, e.clientY);
+                const draggingCard = leftContainer.querySelector('.dragging');
+                if (afterElement == null) {
+                    leftContainer.appendChild(draggingCard);
+                } else {
+                    leftContainer.insertBefore(draggingCard, afterElement);
+                }
+            });
+
+            leftContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const cards = Array.from(leftContainer.querySelectorAll('.section-order-card'));
+                const newOrderedMap = [];
+                cards.forEach(card => {
+                    const originalIdx = parseInt(card.getAttribute('data-index'));
+                    newOrderedMap.push(activeSectionsMap[originalIdx]);
+                });
+                activeSectionsMap = newOrderedMap;
+                rebuildCanvasSectionFlow();
+            });
+
+            const rightContainer = document.getElementById('dynamic-sections-drop-root');
+            rightContainer.querySelectorAll('.canvas-section-row').forEach(row => {
+                row.setAttribute('draggable', 'true');
+                row.addEventListener('dragstart', (e) => {
+                    row.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', row.getAttribute('data-sec-key'));
+                });
+                row.addEventListener('dragend', () => row.classList.remove('dragging'));
+            });
+
+            rightContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(rightContainer, e.clientY);
+                const draggingRow = rightContainer.querySelector('.dragging');
+                if (draggingRow) {
+                    if (afterElement == null) {
+                        rightContainer.appendChild(draggingRow);
+                    } else {
+                        rightContainer.insertBefore(draggingRow, afterElement);
+                    }
+                }
+            });
+
+            rightContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const rows = Array.from(rightContainer.querySelectorAll('.canvas-section-row'));
+                const newOrderedMap = [];
+                rows.forEach(row => {
+                    const key = row.getAttribute('data-sec-key');
+                    const found = activeSectionsMap.find(x => x.key === key);
+                    if(found) newOrderedMap.push(found);
+                });
+                activeSectionsMap = newOrderedMap;
+                buildSectionInterfaceControls();
+                renderCleanAccordionsContentEngine();
+            });
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = Array.from(container.querySelectorAll('[draggable="true"]:not(.dragging)'));
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function removeSectionEntirely(index) {
+            activeSectionsMap.splice(index, 1);
+            rebuildCanvasSectionFlow();
+        }
+
+        function addNewGenericSection() {
+            const uniqKey = 'custom_' + Date.now();
+            activeSectionsMap.push({ key: uniqKey, name: 'Custom Section Area', useBullets: true });
+            staticValuesMap[uniqKey] = ["New custom data point item entry description."];
+            rebuildCanvasSectionFlow();
+        }
+
         function renderExperienceEngine() {
-            const panel = document.getElementById('input-group-experience');
             const view = document.getElementById('canvas-experience-entry-root');
-            panel.innerHTML = ''; view.innerHTML = '';
+            if(!view) return;
+            view.innerHTML = '';
+
+            const section = activeSectionsMap.find(x => x.key === 'experience');
+            const styleClass = (section && section.useBullets) ? 'bullets-enabled' : 'bullets-disabled';
 
             expStateList.forEach(item => {
-                const uiCard = document.createElement('div');
-                uiCard.className = 'dynamic-node-card';
-                uiCard.innerHTML = `
-                    <button class="trash-action" onclick="deleteExperienceBlock(${item.id})">Remove</button>
-                    <div class="input-group-element"><label>Role / Position Title</label><input type="text" value="${item.role}" onfocus="triggerUiFieldHighlight('exp-view-${item.id}')" onblur="removeUiFieldHighlight('exp-view-${item.id}')" oninput="mutateExperienceData(${item.id}, 'role', this.value)"></div>
-                    <div class="input-group-element"><label>Company / Division</label><input type="text" value="${item.firm}" onfocus="triggerUiFieldHighlight('exp-view-${item.id}')" onblur="removeUiFieldHighlight('exp-view-${item.id}')" oninput="mutateExperienceData(${item.id}, 'firm', this.value)"></div>
-                    <div class="input-group-element"><label>Timeline</label><input type="text" value="${item.timeline}" onfocus="triggerUiFieldHighlight('exp-view-${item.id}')" onblur="removeUiFieldHighlight('exp-view-${item.id}')" oninput="mutateExperienceData(${item.id}, 'timeline', this.value)"></div>
-                    <div class="input-group-element"><label>Bullets Mapping</label><textarea rows="2" onfocus="triggerUiFieldHighlight('exp-view-${item.id}')" onblur="removeUiFieldHighlight('exp-view-${item.id}')" oninput="mutateExperienceData(${item.id}, 'bullets', this.value)">${item.bullets}</textarea></div>
-                `;
-                panel.appendChild(uiCard);
-
                 const canvasBlock = document.createElement('div');
                 canvasBlock.className = 'data-item-container';
-                canvasBlock.id = `exp-view-${item.id}`;
+                canvasBlock.setAttribute('data-exp-id', item.id);
+                
+                const lines = item.bullets.split('\n');
+                const bulletListMarkup = lines.map(l => `<span class="bullet-point-line ${styleClass}">${l}</span>`).join('');
+
                 canvasBlock.innerHTML = `
-                    <div class="data-flex-row"><span contenteditable="true" onblur="mutateExperienceData(${item.id}, 'role', this.innerText, true)">${item.role}</span><span contenteditable="true" onblur="mutateExperienceData(${item.id}, 'timeline', this.innerText, true)">${item.timeline}</span></div>
-                    <div class="data-flex-sub"><span contenteditable="true" onblur="mutateExperienceData(${item.id}, 'firm', this.innerText, true)">${item.firm}</span><span></span></div>
-                    <div class="data-desc-node" contenteditable="true" onblur="mutateExperienceData(${item.id}, 'bullets', this.innerText, true)">${item.bullets}</div>
+                    <table width="100%" cellpadding="0" cellspacing="0" style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td align="left" style="font-weight:600; color:#111;"><span class="exp-role" contenteditable="true" onblur="mutateExperienceData(${item.id}, 'role', this.innerText, true)">${item.role}</span></td>
+                            <td align="right" style="font-weight:600; color:#111;"><span class="exp-timeline" contenteditable="true" onblur="mutateExperienceData(${item.id}, 'timeline', this.innerText, true)">${item.timeline}</span></td>
+                        </tr>
+                        <tr>
+                            <td align="left" colspan="2" style="font-style:italic; color:#555; padding-top:2px;"><span class="exp-firm" contenteditable="true" onblur="mutateExperienceData(${item.id}, 'firm', this.innerText, true)">${item.firm}</span></td>
+                        </tr>
+                    </table>
+                    <div class="data-desc-node exp-bullets-container" contenteditable="true" onblur="mutateExperienceData(${item.id}, 'bullets', this.innerText, true)">${bulletListMarkup}</div>
                 `;
                 view.appendChild(canvasBlock);
             });
         }
 
         function appendExperienceBlock() {
-            const uid = Date.now();
-            expStateList.push({ id: uid, role: "Lead Systems Architect", firm: "Enterprise Network Solutions", timeline: "2025", bullets: "• Deployed highly robust interface architectures layout pipelines." });
+            expStateList.push({ id: Date.now(), role: "Lead Systems Architect", firm: "Enterprise Solutions", timeline: "2025", bullets: "Deployed robust interface architectures system pipelines." });
             renderExperienceEngine();
-            autoSaveStateToLocalStorage();
-            triggerUiFieldHighlight(`exp-view-${uid}`);
+            renderSubExperienceFormFields();
         }
 
         function deleteExperienceBlock(id) {
             expStateList = expStateList.filter(item => item.id !== id);
             renderExperienceEngine();
-            autoSaveStateToLocalStorage();
+            renderSubExperienceFormFields();
         }
 
-        function mutateExperienceData(id, key, val, preventRebuild = false) {
-            let record = expStateList.find(x => x.id === id);
-            if(record) {
-                record[key] = val;
-                if(!preventRebuild) renderExperienceEngine();
-                autoSaveStateToLocalStorage();
-            }
-        }
-
-        // Education Block Compilers Array
         function renderEducationEngine() {
-            const panel = document.getElementById('input-group-education');
             const view = document.getElementById('canvas-education-entry-root');
-            panel.innerHTML = ''; view.innerHTML = '';
-
+            if(!view) return;
+            view.innerHTML = '';
             eduStateList.forEach(item => {
-                const uiCard = document.createElement('div');
-                uiCard.className = 'dynamic-node-card';
-                uiCard.innerHTML = `
-                    <button class="trash-action" onclick="deleteEducationBlock(${item.id})">Remove</button>
-                    <div class="input-group-element"><label>Degree / Program</label><input type="text" value="${item.degree}" onfocus="triggerUiFieldHighlight('edu-view-${item.id}')" onblur="removeUiFieldHighlight('edu-view-${item.id}')" oninput="mutateEducationData(${item.id}, 'degree', this.value)"></div>
-                    <div class="input-group-element"><label>Institution / School</label><input type="text" value="${item.school}" onfocus="triggerUiFieldHighlight('edu-view-${item.id}')" onblur="removeUiFieldHighlight('edu-view-${item.id}')" oninput="mutateEducationData(${item.id}, 'school', this.value)"></div>
-                    <div class="input-group-element"><label>Timeline Year</label><input type="text" value="${item.timeline}" onfocus="triggerUiFieldHighlight('edu-view-${item.id}')" onblur="removeUiFieldHighlight('edu-view-${item.id}')" oninput="mutateEducationData(${item.id}, 'timeline', this.value)"></div>
-                `;
-                panel.appendChild(uiCard);
-
                 const canvasBlock = document.createElement('div');
                 canvasBlock.className = 'data-item-container';
-                canvasBlock.id = `edu-view-${item.id}`;
+                canvasBlock.setAttribute('data-edu-id', item.id);
                 canvasBlock.innerHTML = `
-                    <div class="data-flex-row"><span contenteditable="true" onblur="mutateEducationData(${item.id}, 'degree', this.innerText, true)">${item.degree}</span><span contenteditable="true" onblur="mutateEducationData(${item.id}, 'timeline', this.innerText, true)">${item.timeline}</span></div>
-                    <div class="data-flex-sub"><span contenteditable="true" onblur="mutateEducationData(${item.id}, 'school', this.innerText, true)">${item.school}</span><span></span></div>
+                    <table width="100%" cellpadding="0" cellspacing="0" style="width:100%; border-collapse:collapse;">
+                        <tr>
+                            <td align="left" style="font-weight:600; color:#111;"><span class="edu-degree" contenteditable="true" onblur="mutateEducationData(${item.id}, 'degree', this.innerText, true)">${item.degree}</span></td>
+                            <td align="right" style="font-weight:600; color:#111;"><span class="edu-timeline" contenteditable="true" onblur="mutateEducationData(${item.id}, 'timeline', this.innerText, true)">${item.timeline}</span></td>
+                        </tr>
+                        <tr>
+                            <td align="left" colspan="2" style="font-style:italic; color:#555; padding-top:2px;"><span class="edu-school" contenteditable="true" onblur="mutateEducationData(${item.id}, 'school', this.innerText, true)">${item.school}</span></td>
+                        </tr>
+                    </table>
                 `;
                 view.appendChild(canvasBlock);
             });
         }
 
         function appendEducationBlock() {
-            const uid = Date.now();
-            eduStateList.push({ id: uid, degree: "M.S. Technical Systems Optimization", school: "State Institute Council", timeline: "2024" });
+            eduStateList.push({ id: Date.now(), degree: "M.S. Systems Engineering", school: "State Technical Council", timeline: "2024" });
             renderEducationEngine();
-            autoSaveStateToLocalStorage();
-            triggerUiFieldHighlight(`edu-view-${uid}`);
+            renderSubEducationFormFields();
         }
 
         function deleteEducationBlock(id) {
             eduStateList = eduStateList.filter(item => item.id !== id);
             renderEducationEngine();
-            autoSaveStateToLocalStorage();
+            renderSubEducationFormFields();
         }
 
-        function mutateEducationData(id, key, val, preventRebuild = false) {
-            let record = eduStateList.find(x => x.id === id);
-            if(record) {
-                record[key] = val;
-                if(!preventRebuild) renderEducationEngine();
-                autoSaveStateToLocalStorage();
-            }
-        }
-
-        function autoSaveStateToLocalStorage() {
-            localStorage.setItem('as_exp_state', JSON.stringify(expStateList));
-            localStorage.setItem('as_edu_state', JSON.stringify(eduStateList));
-        }
-
-        // Export Actions Core Compilers
+        /* --- EXPORT GENERATION CORE --- */
         function triggerPdfExport() {
             const rootNode = document.getElementById('canvasSheetEntity');
             const parameters = {
-                margin: 0, filename: 'Resume.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2.4, useCORS: true, letterRendering: true },
+                margin: 0,
+                filename: 'Resume_Document.pdf',
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 4, useCORS: true, letterRendering: true, backgroundColor: '#ffffff', scrollY: 0, scrollX: 0 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             html2pdf().set(parameters).from(rootNode).save();
         }
 
-        // Microsoft Word export logic 
         function triggerWordExport() {
-            const rawBody = document.getElementById('canvasSheetEntity').innerHTML;
-            const fullStructure = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:'Arial',sans-serif;padding:30px;color:#222;} .canvas-section-heading{font-size:14px;font-weight:bold;border-bottom:1px solid #333;margin-top:15px;}</style></head><body>${rawBody}</body></html>`;
+            const rootNode = document.getElementById('canvasSheetEntity');
+            const computedStyle = window.getComputedStyle(document.documentElement);
+            const primaryColor = computedStyle.getPropertyValue('--resume-primary').trim();
+            const fontMultiplier = parseFloat(computedStyle.getPropertyValue('--resume-multiplier').trim() || 1);
+            const sectionSpacing = computedStyle.getPropertyValue('--resume-spacing').trim();
+            const headingAlignment = computedStyle.getPropertyValue('--resume-align').trim();
+            const globalSize = computedStyle.getPropertyValue('--resume-font-size').trim();
+            const globalWeight = computedStyle.getPropertyValue('--resume-font-weight').trim();
+            
+            let appliedFontStack = 'Arial, sans-serif';
+            if (rootNode.classList.contains('type-editorial') || rootNode.classList.contains('type-classic')) {
+                appliedFontStack = 'Georgia, serif';
+            } else if (rootNode.classList.contains('type-technical')) {
+                appliedFontStack = 'Courier New, monospace';
+            }
+
+            const clonedDocumentNode = rootNode.cloneNode(true);
+            const cleanedHTMLContent = clonedDocumentNode.innerHTML;
+
+            const inlineAppliedStyles = `
+                <style>
+                    body { font-family: ${appliedFontStack}; color: #3d3430; background-color: #ffffff; }
+                    * { font-size: ${globalSize}; font-weight: ${globalWeight}; }
+                    .canvas-header-block { text-align: ${headingAlignment}; margin-bottom: 18pt; }
+                    .canvas-name-title { font-size: ${Math.round(23 * fontMultiplier)}pt !important; font-weight: bold !important; color: ${primaryColor}; margin-bottom: 4pt; }
+                    .canvas-contact-title { color: #5c5552; line-height: 1.4; }
+                    .canvas-section-row { margin-bottom: ${parseInt(sectionSpacing) * 0.75}pt; }
+                    .canvas-section-heading { 
+                        font-weight: bold !important; 
+                        color: ${primaryColor}; 
+                        border-bottom: 2px solid ${primaryColor}; 
+                        padding-bottom: 3pt; 
+                        margin-bottom: 8pt;
+                        margin-top: 12pt;
+                        text-transform: uppercase;
+                    }
+                    .data-item-container { margin-bottom: 10pt; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 2pt; }
+                    td { font-family: ${appliedFontStack}; }
+                    .data-desc-node, .data-body-text { 
+                        color: #222222; 
+                        line-height: 1.45; 
+                        margin-top: 2pt;
+                        display: block;
+                    }
+                    .bullet-point-line { display: block; margin-bottom: 2px; }
+                    .bullet-point-line.bullets-enabled::before { content: "• " !important; }
+                    .bullet-point-line.bullets-disabled::before { content: "" !important; }
+                </style>
+            `;
+
+            const fullStructure = `<!DOCTYPE html><html><head><meta charset="utf-8">${inlineAppliedStyles}</head><body><div>${cleanedHTMLContent}</div></body></html>`;
             const docBlob = htmlDocx.asBlob(fullStructure);
             const virtualAnchor = document.createElement('a');
             virtualAnchor.href = URL.createObjectURL(docBlob);
@@ -826,9 +1354,8 @@
             virtualAnchor.click();
         }
 
-        // Startup Core Components Initializations
-        renderExperienceEngine();
-        renderEducationEngine();
+        // Initialize Core Component Loops
+        rebuildCanvasSectionFlow();
     </script>
 </body>
 </html>
